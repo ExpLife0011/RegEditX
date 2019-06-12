@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AxialisIconCollection>
+  <Name>commandbar</Name>
+  <Icon>
+    <Name>button-help</Name>
+    <StockIconName>button-help.axvi</StockIconName>
+    <StockIconFamily>Axialis Flat Pro 2017</StockIconFamily>
+    <StockIconSet>Basic</StockIconSet>
+    <StockOverlayName></StockOverlayName>
+    <StockOverlayPos>4</StockOverlayPos>
+    <ResourceIDValue>100</ResourceIDValue>
+    <ResourceID>ID_BUTTON-HELP</ResourceID>
+  </Icon>
+  <Icon>
+    <Name>clipboard-copy</Name>
+    <StockIconName>clipboard-copy.axvi</StockIconName>
+    <StockIconFamily>Axialis Flat Pro 2017</StockIconFamily>
+    <StockIconSet>Basic</StockIconSet>
+    <StockOverlayName></StockOverlayName>
+    <StockOverlayPos>4</StockOverlayPos>
+    <ResourceIDValue>101</ResourceIDValue>
+    <ResourceID>ID_CLIPBOARD-COPY</ResourceID>
+  </Icon>
+  <Icon>
+    <Name>clipboard-cut</Name>
+    <StockIconName>clipboard-cut.axvi</StockIconName>
+    <StockIconFamily>Axialis Flat Pro 2017</StockIconFamily>
+    <StockIconSet>Basic</StockIconSet>
+    <StockOverlayName></StockOverlayName>
+    <StockOverlayPos>4</StockOverlayPos>
+    <ResourceIDValue>102</ResourceIDValue>
+    <ResourceID>ID_CLIPBOARD-CUT</ResourceID>
+  </Icon>
+  <Icon>
+    <Name>clipboard-paste</Name>
+    <StockIconName>clipboard-paste.axvi</StockIconName>
+    <StockIconFamily>Axialis Flat Pro 2017</StockIconFamily>
+    <StockIconSet>Basic</StockIconSet>
+    <StockOverlayName></StockOverlayName>
+    <StockOverlayPos>4</StockOverlayPos>
+    <ResourceIDValue>103</ResourceIDValue>
+    <ResourceID>ID_CLIPBOARD-PASTE</ResourceID>
+  </Icon>
+  <Icon>
+    <Name>symbol-delete</Name>
+    <StockIconName>symbol-delete.axvi</StockIconName>
+    <StockIconFamily>Axialis Flat Pro 2017</StockIconFamily>
+    <StockIconSet>Basic</StockIconSet>
+    <StockOverlayName></StockOverlayName>
+    <StockOverlayPos>4</StockOverlayPos>
+    <ResourceIDValue>104</ResourceIDValue>
+    <ResourceID>ID_SYMBOL-DELETE</ResourceID>
+  </Icon>
+  <Icon>
+    <Name>rename</Name>
+    <StockIconName>rename.axvi</StockIconName>
+    <StockIconFamily>Axialis Flat Pro 2017</StockIconFamily>
+    <StockIconSet>Basic</StockIconSet>
+    <StockOverlayName></StockOverlayName>
+    <StockOverlayPos>4</StockOverlayPos>
+    <ResourceIDValue>105</ResourceIDValue>
+    <ResourceID>ID_RENAME</ResourceID>
+  </Icon>
+  <Icon>
+    <Name>folder-new</Name>
+    <StockIconName>folder.axvi</StockIconName>
+    <StockIconFamily>Axialis Flat Pro 2017</StockIconFamily>
+    <StockIconSet>Basic</StockIconSet>
+    <ColorizeOverlay>#48CFAE</ColorizeOverlay>
+    <StockOverlayName>new.axvi</StockOverlayName>
+    <StockOverlayPos>4</StockOverlayPos>
+    <ResourceIDValue>108</ResourceIDValue>
+    <ResourceID>ID_FOLDER-NEW</ResourceID>
+  </Icon>
+  <Icon>
+    <Name>command-redo</Name>
+    <StockIconName>command-redo.axvi</StockIconName>
+    <StockIconFamily>Axialis Flat Pro 2017</StockIconFamily>
+    <StockIconSet>Basic</StockIconSet>
+    <StockOverlayName></StockOverlayName>
+    <StockOverlayPos>4</StockOverlayPos>
+    <ResourceIDValue>107</ResourceIDValue>
+    <ResourceID>ID_COMMAND-REDO</ResourceID>
+  </Icon>
+  <Icon>
+    <Name>command-undo</Name>
+    <StockIconName>command-undo.axvi</StockIconName>
+    <StockIconFamily>Axialis Flat Pro 2017</StockIconFamily>
+    <StockIconSet>Basic</StockIconSet>
+    <StockOverlayName></StockOverlayName>
+    <StockOverlayPos>4</StockOverlayPos>
+    <ResourceIDValue>106</ResourceIDValue>
+    <ResourceID>ID_COMMAND-UNDO</ResourceID>
+  </Icon>
+  <Icon>
+    <Name>button-refresh</Name>
+    <StockIconName>button-refresh.axvi</StockIconName>
+    <StockIconFamily>Axialis Flat Pro 2017</StockIconFamily>
+    <StockIconSet>Basic</StockIconSet>
+    <StockOverlayName></StockOverlayName>
+    <StockOverlayPos>11531028</StockOverlayPos>
+    <ResourceIDValue>109</ResourceIDValue>
+    <ResourceID>ID_BUTTON-REFRESH</ResourceID>
+  </Icon>
+  <Icon>
+    <Name>document-text-write</Name>
+    <StockIconName>document-text-write.axvi</StockIconName>
+    <StockIconFamily>Axialis Flat Pro 2017</StockIconFamily>
+    <StockIconSet>Word Processing</StockIconSet>
+    <StockOverlayName></StockOverlayName>
+    <StockOverlayPos>4</StockOverlayPos>
+    <ResourceIDValue>110</ResourceIDValue>
+    <ResourceID>ID_DOCUMENT-TEXT-WRITE</ResourceID>
+  </Icon>
+  <Icon>
+    <Name>type-binary</Name>
+    <StockIconName>type-binary.axvi</StockIconName>
+    <StockIconFamily>Axialis Flat Pro 2017</StockIconFamily>
+    <StockIconSet>Database</StockIconSet>
+    <Colorize>#6D913F</Colorize>
+    <StockOverlayName></StockOverlayName>
+    <StockOverlayPos>11527392</StockOverlayPos>
+    <ResourceIDValue>111</ResourceIDValue>
+    <ResourceID>ID_TYPE-BINARY</ResourceID>
+  </Icon>
+  <Icon>
+    <Name>format-text</Name>
+    <StockIconName>format-text.axvi</StockIconName>
+    <StockIconFamily>Axialis Flat Pro 2017</StockIconFamily>
+    <StockIconSet>Spreadsheet</StockIconSet>
+    <Colorize>#8E44AD</Colorize>
+    <StockOverlayName></StockOverlayName>
+    <StockOverlayPos>11531028</StockOverlayPos>
+    <ResourceIDValue>112</ResourceIDValue>
+    <ResourceID>ID_FORMAT-TEXT</ResourceID>
+  </Icon>
+</AxialisIconCollection>
