@@ -69,7 +69,7 @@
     <ColorizeOverlay>#48CFAE</ColorizeOverlay>
     <StockOverlayName>new.axvi</StockOverlayName>
     <StockOverlayPos>4</StockOverlayPos>
-    <ResourceIDValue>108</ResourceIDValue>
+    <ResourceIDValue>106</ResourceIDValue>
     <ResourceID>ID_FOLDER-NEW</ResourceID>
   </Icon>
   <Icon>
@@ -89,7 +89,7 @@
     <StockIconSet>Basic</StockIconSet>
     <StockOverlayName></StockOverlayName>
     <StockOverlayPos>4</StockOverlayPos>
-    <ResourceIDValue>106</ResourceIDValue>
+    <ResourceIDValue>108</ResourceIDValue>
     <ResourceID>ID_COMMAND-UNDO</ResourceID>
   </Icon>
   <Icon>
@@ -133,5 +133,25 @@
     <StockOverlayPos>11531028</StockOverlayPos>
     <ResourceIDValue>112</ResourceIDValue>
     <ResourceID>ID_FORMAT-TEXT</ResourceID>
+  </Icon>
+  <Icon>
+    <Name>format-number</Name>
+    <StockIconName>format-number.axvi</StockIconName>
+    <StockIconFamily>Axialis Flat Pro 2017</StockIconFamily>
+    <StockIconSet>Spreadsheet</StockIconSet>
+    <StockOverlayName></StockOverlayName>
+    <StockOverlayPos>4</StockOverlayPos>
+    <ResourceIDValue>113</ResourceIDValue>
+    <ResourceID>ID_FORMAT-NUMBER</ResourceID>
+  </Icon>
+  <Icon>
+    <Name>properties</Name>
+    <StockIconName>properties.axvi</StockIconName>
+    <StockIconFamily>Axialis Flat Pro 2017</StockIconFamily>
+    <StockIconSet>Development</StockIconSet>
+    <StockOverlayName></StockOverlayName>
+    <StockOverlayPos>4</StockOverlayPos>
+    <ResourceIDValue>114</ResourceIDValue>
+    <ResourceID>ID_PROPERTIES</ResourceID>
   </Icon>
 </AxialisIconCollection>

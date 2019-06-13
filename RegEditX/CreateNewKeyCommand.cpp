@@ -6,14 +6,12 @@ CreateNewKeyCommand::CreateNewKeyCommand(const CString& parentPath, PCWSTR keyNa
 	: AppCommandBase(L"New Key"), _parentName(parentPath), _keyName(keyName) {
 }
 
-void CreateNewKeyCommand::Execute() {
+bool CreateNewKeyCommand::Execute() {
 	auto status = RegistryManager::Get().CreateKey(_parentName, _keyName);
-	if (status == ERROR_SUCCESS) {
-
-	}
+	return status == ERROR_SUCCESS;
 }
 
-void CreateNewKeyCommand::Undo() {
-	RegistryManager::Get().DeleteKey(_parentName, _keyName);
+bool CreateNewKeyCommand::Undo() {
+	return RegistryManager::Get().DeleteKey(_parentName, _keyName) == ERROR_SUCCESS;
 }
 

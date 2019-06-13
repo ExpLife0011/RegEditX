@@ -36,3 +36,7 @@ bool RegKeyTreeNode::HasChildren() const {
 		return true;
 	return false;
 }
+
+bool RegKeyTreeNode::CanDelete() const {
+	return (ULONG_PTR)_key.m_hKey < (ULONG_PTR)(1 << 24);
+}

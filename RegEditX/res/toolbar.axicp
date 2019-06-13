@@ -8,7 +8,7 @@
     <StockIconSet>Basic</StockIconSet>
     <StockOverlayName></StockOverlayName>
     <StockOverlayPos>4</StockOverlayPos>
-    <ResourceIDValue>101</ResourceIDValue>
+    <ResourceIDValue>100</ResourceIDValue>
     <ResourceID>ID_CLIPBOARD-COPY</ResourceID>
   </Icon>
   <Icon>
@@ -18,7 +18,7 @@
     <StockIconSet>Basic</StockIconSet>
     <StockOverlayName></StockOverlayName>
     <StockOverlayPos>4</StockOverlayPos>
-    <ResourceIDValue>102</ResourceIDValue>
+    <ResourceIDValue>101</ResourceIDValue>
     <ResourceID>ID_CLIPBOARD-CUT</ResourceID>
   </Icon>
   <Icon>
@@ -28,7 +28,7 @@
     <StockIconSet>Basic</StockIconSet>
     <StockOverlayName></StockOverlayName>
     <StockOverlayPos>4</StockOverlayPos>
-    <ResourceIDValue>103</ResourceIDValue>
+    <ResourceIDValue>102</ResourceIDValue>
     <ResourceID>ID_CLIPBOARD-PASTE</ResourceID>
   </Icon>
   <Icon>
@@ -38,7 +38,7 @@
     <StockIconSet>Basic</StockIconSet>
     <StockOverlayName></StockOverlayName>
     <StockOverlayPos>4</StockOverlayPos>
-    <ResourceIDValue>104</ResourceIDValue>
+    <ResourceIDValue>103</ResourceIDValue>
     <ResourceID>ID_SYMBOL-DELETE</ResourceID>
   </Icon>
   <Icon>
@@ -48,7 +48,7 @@
     <StockIconSet>Basic</StockIconSet>
     <StockOverlayName></StockOverlayName>
     <StockOverlayPos>4</StockOverlayPos>
-    <ResourceIDValue>100</ResourceIDValue>
+    <ResourceIDValue>104</ResourceIDValue>
     <ResourceID>ID_COMMAND-UNDO</ResourceID>
   </Icon>
   <Icon>
@@ -58,7 +58,7 @@
     <StockIconSet>Basic</StockIconSet>
     <StockOverlayName></StockOverlayName>
     <StockOverlayPos>4</StockOverlayPos>
-    <ResourceIDValue>108</ResourceIDValue>
+    <ResourceIDValue>105</ResourceIDValue>
     <ResourceID>ID_COMMAND-REDO</ResourceID>
   </Icon>
   <Icon>
@@ -68,7 +68,7 @@
     <StockIconSet>Basic</StockIconSet>
     <StockOverlayName></StockOverlayName>
     <StockOverlayPos>4</StockOverlayPos>
-    <ResourceIDValue>105</ResourceIDValue>
+    <ResourceIDValue>106</ResourceIDValue>
     <ResourceID>ID_RENAME</ResourceID>
   </Icon>
   <Icon>
@@ -78,7 +78,7 @@
     <StockIconSet>Basic</StockIconSet>
     <StockOverlayName></StockOverlayName>
     <StockOverlayPos>11531028</StockOverlayPos>
-    <ResourceIDValue>109</ResourceIDValue>
+    <ResourceIDValue>107</ResourceIDValue>
     <ResourceID>ID_BUTTON-REFRESH</ResourceID>
   </Icon>
   <Icon>
@@ -89,7 +89,17 @@
     <ColorizeOverlay>#48CFAE</ColorizeOverlay>
     <StockOverlayName>new.axvi</StockOverlayName>
     <StockOverlayPos>4</StockOverlayPos>
-    <ResourceIDValue>106</ResourceIDValue>
+    <ResourceIDValue>108</ResourceIDValue>
     <ResourceID>ID_FOLDER-NEW</ResourceID>
+  </Icon>
+  <Icon>
+    <Name>properties</Name>
+    <StockIconName>properties.axvi</StockIconName>
+    <StockIconFamily>Axialis Flat Pro 2017</StockIconFamily>
+    <StockIconSet>Development</StockIconSet>
+    <StockOverlayName></StockOverlayName>
+    <StockOverlayPos>4</StockOverlayPos>
+    <ResourceIDValue>109</ResourceIDValue>
+    <ResourceID>ID_PROPERTIES</ResourceID>
   </Icon>
 </AxialisIconCollection>

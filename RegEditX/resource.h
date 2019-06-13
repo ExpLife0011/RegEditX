@@ -12,6 +12,8 @@
 #define IDR_COMMANDBAR                  205
 #define IDR_MENU1                       207
 #define IDR_CONTEXT                     207
+#define IDD_NEWKEY                      208
+#define IDC_NAME                        1000
 #define ID_VIEW_TREEPANE                32774
 #define ID_OPTIONS_ALWAYSONTOP          32775
 #define ID_VIEW_TREEFONT                32776
@@ -21,14 +23,22 @@
 #define ID_EDIT_MODIFY                  32780
 #define ID_TREE_NEW                     32781
 #define ID_NEW_KEY32782                 32782
+#define ID_NEW_DWORDVALUE               32783
+#define ID_NEW_QWORDVALUE               32784
+#define ID_NEW_STRINGVALUE              32785
+#define ID_NEW_MULTIPLESTRINGSVALUE     32786
+#define ID_NEW_EXPANDSTRINGVALUE        32787
+#define ID_NEW_BINARYVALUE              32788
+#define ID_EDIT_NEW                     32789
+#define ID_VIEW_PROPERTIES              32790
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        208
-#define _APS_NEXT_COMMAND_VALUE         32783
-#define _APS_NEXT_CONTROL_VALUE         1000
+#define _APS_NEXT_RESOURCE_VALUE        210
+#define _APS_NEXT_COMMAND_VALUE         32791
+#define _APS_NEXT_CONTROL_VALUE         1001
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

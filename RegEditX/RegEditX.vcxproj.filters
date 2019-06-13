@@ -54,6 +54,9 @@
     <ClCompile Include="RenameKeyCommand.cpp">
       <Filter>Commands</Filter>
     </ClCompile>
+    <ClCompile Include="NewKeyDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -100,6 +103,9 @@
     </ClInclude>
     <ClInclude Include="RenameKeyCommand.h">
       <Filter>Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="NewKeyDlg.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

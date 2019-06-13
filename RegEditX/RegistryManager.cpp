@@ -158,8 +158,11 @@ RegKeyTreeNode* RegistryManager::GetHiveNode(const CString& name) const {
 
 bool RegistryManager::IsExpanded(TreeNodeBase* node) const {
 	auto hChild = _tree.GetChildItem(node->GetHItem());
-	if (hChild == nullptr)
+	if (hChild == nullptr && node->GetChildNodes().size() == 0)
 		return false;
+
+	if (hChild == nullptr)
+		return true;
 
 	return _tree.GetItemData(hChild) != 0;
 }
@@ -171,7 +174,7 @@ HTREEITEM RegistryManager::AddItem(TreeNodeBase* item, HTREEITEM hParent, HTREEI
 	if (item->HasChildren()) {
 		_tree.InsertItem(L"***", hItem, TVI_LAST);
 	}
-
+	_tree.EnsureVisible(hItem);
 	return hItem;
 }
 

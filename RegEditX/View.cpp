@@ -108,6 +108,16 @@ CString CView::GetDataAsString(const ListItem& item) {
 	return text.GetLength() < 1024 ? text : text.Mid(0, 1024);
 }
 
+bool CView::CanDeleteSelected() const {
+	if (GetSelectedCount() == 0)
+		return false;
+
+	auto& item = m_Items[GetSelectedIndex()];
+	if (item.TreeNode == nullptr)
+		return true;
+	return item.TreeNode->CanDelete();
+}
+
 void CView::Update(TreeNodeBase* node, bool ifTheSame) {
 	if (ifTheSame && m_CurrentNode != node)
 		return;
@@ -248,4 +258,8 @@ LRESULT CView::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&) {
 	InsertColumn(4, L"Last Write", LVCFMT_LEFT, 150);
 
 	return 0;
+}
+
+LRESULT CView::OnDelete(WORD, WORD, HWND, BOOL&) {
+	return LRESULT();
 }

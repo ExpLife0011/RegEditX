@@ -5,9 +5,9 @@
 class RenameKeyCommand : AppCommandBase {
 	RenameKeyCommand(const CString& path, const CString& newname);
 
-	void Execute() override;
-	void Undo() override {
-		Execute();
+	bool Execute() override;
+	bool Undo() override {
+		return Execute();
 	}
 
 private:

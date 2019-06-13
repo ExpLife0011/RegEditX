@@ -22,10 +22,12 @@ bool CommandManager::Undo() {
 		return false;
 
 	auto cmd = _undoList.back();
-	cmd->Undo();
-	_redoList.push_back(cmd);
-	_undoList.pop_back();
-	return true;
+	auto success = cmd->Undo();
+	if (success) {
+		_redoList.push_back(cmd);
+		_undoList.pop_back();
+	}
+	return success;
 }
 
 bool CommandManager::Redo() {
@@ -33,10 +35,12 @@ bool CommandManager::Redo() {
 		return false;
 
 	auto command = _redoList.back();
-	command->Execute();
-	_redoList.pop_back();
-	_undoList.push_back(command);
-	return true;
+	auto success = command->Execute();
+	if (success) {
+		_redoList.pop_back();
+		_undoList.push_back(command);
+	}
+	return success;
 }
 
 void CommandManager::Clear() {

@@ -12,8 +12,8 @@ struct AppCommandBase abstract {
 		return _desc;
 	}
 
-	virtual void Execute() = 0;
-	virtual void Undo() = 0;
+	virtual bool Execute() = 0;
+	virtual bool Undo() = 0;
 
 private:
 	CString _name, _desc;
@@ -24,8 +24,8 @@ struct AppCommandList : AppCommandBase {
 
 	void AddCommand(std::shared_ptr<AppCommandBase> command);
 
-	void Execute() override;
-	void Undo() override;
+	bool Execute() override;
+	bool Undo() override;
 
 private:
 	std::vector<std::shared_ptr<AppCommandBase>> _commands;

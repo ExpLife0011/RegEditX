@@ -18,6 +18,13 @@ TreeNodeBase* TreeNodeBase::RemoveChild(const CString& name) {
 	return nullptr;
 }
 
+TreeNodeBase* TreeNodeBase::FindChild(const CString& text) const {
+	for (auto& node : _childNodes)
+		if (node->GetText().CompareNoCase(text) == 0)
+			return node;
+	return nullptr;
+}
+
 void TreeNodeBase::SetParent(TreeNodeBase* parent) {
 	_parentNode = parent;
 	_full = parent->GetFullPath() + L"\\" + GetText();

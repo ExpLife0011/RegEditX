@@ -28,6 +28,7 @@ extern CAppModule _Module;
 #include <atlstr.h>
 #include <strsafe.h>
 #include <atltime.h>
+#include <atlddx.h>
 
 #include <unordered_map>
 #include <memory>

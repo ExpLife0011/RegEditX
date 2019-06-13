@@ -52,6 +52,8 @@ struct TreeNodeBase {
 		return _childNodes;
 	}
 
+	TreeNodeBase* FindChild(const CString& text) const;
+
 	virtual void Delete() {
 		delete this;
 	}
@@ -61,6 +63,10 @@ struct TreeNodeBase {
 	}
 
 	virtual bool IsExpanded() const {
+		return false;
+	}
+
+	virtual bool CanDelete() const {
 		return false;
 	}
 

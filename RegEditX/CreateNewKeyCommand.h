@@ -6,8 +6,8 @@ class CreateNewKeyCommand : public AppCommandBase {
 public:
 	CreateNewKeyCommand(const CString& parentPath, PCWSTR keyName);
 
-	void Execute() override;
-	void Undo() override;
+	bool Execute() override;
+	bool Undo() override;
 
 private:
 	CString _keyName;

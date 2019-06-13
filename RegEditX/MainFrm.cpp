@@ -9,22 +9,29 @@
 #include "View.h"
 #include "MainFrm.h"
 #include "CreateNewKeyCommand.h"
+#include "NewKeyDlg.h"
 
 BOOL CMainFrame::PreTranslateMessage(MSG* pMsg) {
-	if (CFrameWindowImpl<CMainFrame>::PreTranslateMessage(pMsg))
+	if (m_view.PreTranslateMessage(pMsg))
 		return TRUE;
 
-	return m_view.PreTranslateMessage(pMsg);
+	return (CFrameWindowImpl<CMainFrame>::PreTranslateMessage(pMsg));
 }
 
 BOOL CMainFrame::OnIdle() {
+	UpdateUI();
 	UIUpdateToolBar();
+
 	return FALSE;
 }
 
 void CMainFrame::UpdateUI() {
 	UIEnable(ID_EDIT_UNDO, m_CmdMgr.CanUndo());
 	UIEnable(ID_EDIT_REDO, m_CmdMgr.CanRedo());
+	if (m_splitter.GetActivePane() == 0)
+		UIEnable(ID_EDIT_DELETE, m_SelectedNode && m_SelectedNode->CanDelete());
+	else
+		UIEnable(ID_EDIT_DELETE, m_view.CanDeleteSelected());
 	UIEnable(ID_NEW_KEY, m_SelectedNode->GetNodeType() == TreeNodeType::RegistryKey);
 	UISetText(ID_EDIT_UNDO, (m_CmdMgr.CanUndo() ? L"Undo " + m_CmdMgr.GetUndoCommand()->GetName() : L"Undo") + CString(L"\tCtrl+Z"));
 	UISetText(ID_EDIT_REDO, (m_CmdMgr.CanRedo() ? L"Redo " + m_CmdMgr.GetRedoCommand()->GetName() : L"Redo") + CString(L"\tCtrl+Y"));
@@ -59,7 +66,6 @@ LRESULT CMainFrame::OnTreeSelectionChanged(int, LPNMHDR nmhdr, BOOL&) {
 	auto node = reinterpret_cast<TreeNodeBase*>(m_treeview.GetItemData(item->itemNew.hItem));
 	m_SelectedNode = node;
 	m_view.Update(node);
-	UpdateUI();
 
 	return 0;
 }
@@ -128,7 +134,7 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	m_treeview.SetExtendedStyle(TVS_EX_DOUBLEBUFFER | 0*TVS_EX_MULTISELECT, 0);
 	m_treeview.SetImageList(m_SmallImages.m_hImageList, TVSIL_NORMAL);
 
-	m_view.Create(m_splitter, rcDefault, nullptr, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
+	m_view.Create(m_splitter, rcDefault, nullptr, WS_CHILD | WS_VISIBLE | LVS_SINGLESEL | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		LVS_REPORT | LVS_SHOWSELALWAYS | LVS_OWNERDATA, WS_EX_CLIENTEDGE);
 	m_view.SetImageList(m_SmallImages.m_hImageList, LVSIL_SMALL);
 	m_view.SetImageList(m_LargeImages.m_hImageList, LVSIL_NORMAL);
@@ -151,7 +157,7 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	m_RegMgr.BuildTreeView();
 	m_view.Init(&m_RegMgr);
 
-	UpdateUI();
+
 
 	return 0;
 }
@@ -172,9 +178,12 @@ LRESULT CMainFrame::OnFileExit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 	return 0;
 }
 
-LRESULT CMainFrame::OnFileNew(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	// TODO: add code to initialize document
+LRESULT CMainFrame::OnAlwaysOnTop(WORD, WORD, HWND, BOOL&) {
+	auto style = GetWindowLongPtr(GWL_EXSTYLE);
+	bool topmost = (style & WS_EX_TOPMOST) == 0;
+	SetWindowPos(topmost ? HWND_TOPMOST : HWND_NOTOPMOST, &RECT(), SWP_NOREPOSITION | SWP_NOREDRAW | SWP_NOSIZE | SWP_NOMOVE);
 
+	UISetCheck(ID_OPTIONS_ALWAYSONTOP, topmost);
 	return 0;
 }
 
@@ -208,7 +217,7 @@ LRESULT CMainFrame::OnEditRedo(WORD, WORD, HWND, BOOL&) {
 	if (!m_CmdMgr.CanRedo())
 		return 0;
 	m_CmdMgr.Redo();
-	UpdateUI();
+
 
 	return 0;
 }
@@ -218,7 +227,7 @@ LRESULT CMainFrame::OnEditUndo(WORD, WORD, HWND, BOOL&) {
 	if (!m_CmdMgr.CanUndo())
 		return 0;
 	m_CmdMgr.Undo();
-	UpdateUI();
+
 
 	return 0;
 }
@@ -228,9 +237,16 @@ LRESULT CMainFrame::OnNewKey(WORD, WORD, HWND, BOOL&) {
 	auto node = reinterpret_cast<TreeNodeBase*>(m_treeview.GetItemData(hItem));
 	ATLASSERT(node);
 
-	auto cmd = std::make_shared<CreateNewKeyCommand>(node->GetFullPath(), L"Cactus");
-	m_CmdMgr.AddCommand(cmd);
-	UpdateUI();
+	CNewKeyDlg dlg;
+	if (dlg.DoModal() == IDOK) {
+		if (node->FindChild(dlg.GetKeyName())) {
+			AtlMessageBox(m_hWnd, L"Key name already exists", IDR_MAINFRAME, MB_ICONERROR);
+			return 0;
+		}
+		auto cmd = std::make_shared<CreateNewKeyCommand>(node->GetFullPath(), dlg.GetKeyName());
+		m_CmdMgr.AddCommand(cmd);
+
+	}
 
 	return 0;
 }
@@ -250,4 +266,8 @@ LRESULT CMainFrame::OnTreePaneClose(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWn
 	}
 
 	return 0;
+}
+
+LRESULT CMainFrame::OnDelete(WORD, WORD, HWND, BOOL&) {
+	return LRESULT();
 }

@@ -17,6 +17,8 @@ public:
 	bool Expand(bool expand) override;
 	bool IsExpanded() const override;
 	bool HasChildren() const override;
+	bool CanDelete() const override;
+
 	CRegKey* GetKey() {
 		return &_key;
 	}

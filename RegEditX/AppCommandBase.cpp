@@ -9,12 +9,16 @@ void AppCommandList::AddCommand(std::shared_ptr<AppCommandBase> command) {
 	_commands.push_back(command);
 }
 
-void AppCommandList::Execute() {
+bool AppCommandList::Execute() {
 	for (auto& cmd : _commands)
-		cmd->Execute();
+		if (!cmd->Execute())
+			return false;
+	return true;
 }
 
-void AppCommandList::Undo() {
+bool AppCommandList::Undo() {
 	for (size_t i = _commands.size() - 1; i >= 0; --i)
-		_commands[i]->Undo();
+		if (!_commands[i]->Undo())
+			return false;
+	return true;
 }
