@@ -19,20 +19,26 @@ public:
 	TreeNodeBase* FindNode(TreeNodeBase* root, const CString& path) const;
 	RegKeyTreeNode* GetHiveNode(const CString& name) const;
 	bool IsExpanded(TreeNodeBase* node) const;
+	bool IsHive(TreeNodeBase* node) const;
 
 private:
 	friend class CMainFrame;
 	RegistryManager(CTreeViewCtrl& tree, CView& view);
+	void BuildHiveList();
 
 	HTREEITEM AddItem(TreeNodeBase* item, HTREEITEM hParent, HTREEITEM hAfter = TVI_LAST);
 	void GetHiveAndPath(const CString& parent, CString& hive, CString& path);
 
-	TreeNodeBase* _registryRoot;
+	RegKeyTreeNode* _registryRoot;
+	TreeNodeBase* _stdRegistryRoot;
+
 	RegKeyTreeNode* _HKLM;
 	RegKeyTreeNode* _HKCR;
 	RegKeyTreeNode* _HKCU;
 	RegKeyTreeNode* _HKUsers;
 	RegKeyTreeNode* _HKCC;
+
+	CAtlMap<CString, CString> _hiveList;
 
 	CTreeViewCtrl& _tree;
 	CView& _view;

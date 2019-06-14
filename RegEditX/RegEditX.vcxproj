@@ -269,6 +269,7 @@
     <Image Include="res\commandbar.bmp" />
     <Image Include="res\folder-open.ico" />
     <Image Include="res\folder.ico" />
+    <Image Include="res\hive.ico" />
     <Image Include="res\RegEditX.ico" />
     <Image Include="res\text.ico" />
     <Image Include="res\toolbar.bmp" />

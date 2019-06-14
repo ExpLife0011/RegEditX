@@ -94,10 +94,13 @@ CString CView::GetDataAsString(const ListItem& item) {
 
 		case REG_BINARY:
 			CString digit;
-			BYTE buffer[64];
-			ULONG bytes = 64;
-			if (ERROR_SUCCESS == regNode->GetKey()->QueryBinaryValue(item.ValueName, buffer, &bytes)) {
-				for (DWORD i = 0; i < bytes; i++) {
+			auto buffer = std::make_unique<BYTE[]>(item.ValueSize);
+			if (buffer == nullptr)
+				break;
+			ULONG bytes = item.ValueSize;
+			auto status = regNode->GetKey()->QueryBinaryValue(item.ValueName, buffer.get(), &bytes);
+			if(status == ERROR_SUCCESS) {
+				for (DWORD i = 0; i < min(bytes, 64); i++) {
 					digit.Format(L"%02X ", buffer[i]);
 					text += digit;
 				}
@@ -128,7 +131,7 @@ void CView::Update(TreeNodeBase* node, bool ifTheSame) {
 	m_Items.clear();
 	if (nodes.empty()) {
 		SetItemCount(0);
-		return;
+		//return;
 	}
 
 	m_Items.reserve(nodes.size() + 64);

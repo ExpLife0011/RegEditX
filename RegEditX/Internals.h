@@ -77,3 +77,18 @@ extern "C" NTSYSCALLAPI NTSTATUS NTAPI NtQueryKey(
 	_In_ ULONG Length,
 	_Out_ PULONG ResultLength
 );
+
+extern "C" NTSYSCALLAPI NTSTATUS NTAPI NtOpenKey(
+	_Out_ PHANDLE KeyHandle,
+	_In_ ACCESS_MASK DesiredAccess,
+	_In_ POBJECT_ATTRIBUTES ObjectAttributes
+);
+
+extern "C" NTSYSCALLAPI NTSTATUS NTAPI NtEnumerateKey(
+	_In_ HANDLE KeyHandle,
+	_In_ ULONG Index,
+	_In_ KEY_INFORMATION_CLASS KeyInformationClass,
+	_Out_writes_bytes_opt_(Length) PVOID KeyInformation,
+	_In_ ULONG Length,
+	_Out_ PULONG ResultLength
+);

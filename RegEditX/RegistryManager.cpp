@@ -2,28 +2,64 @@
 #include "RegistryManager.h"
 #include "TreeNodes.h"
 #include "View.h"
+#include "Internals.h"
 
 RegistryManager* RegistryManager::_instance;
 
 RegistryManager::RegistryManager(CTreeViewCtrl& tree, CView& view) : _tree(tree), _view(view) {
 	ATLASSERT(_instance == nullptr);
 	_instance = this;
-	_registryRoot = new TreeNodeBase(L"Registry");
-	_registryRoot->AddChild(_HKCR = new RegKeyTreeNode(HKEY_CLASSES_ROOT, L"HKEY_CLASSES_ROOT"));
-	_registryRoot->AddChild(_HKCU = new RegKeyTreeNode(HKEY_CURRENT_USER, L"HKEY_CURRENT_USER"));
-	_registryRoot->AddChild(_HKLM = new RegKeyTreeNode(HKEY_LOCAL_MACHINE, L"HKEY_LOCAL_MACHINE"));
-	_registryRoot->AddChild(_HKUsers = new RegKeyTreeNode(HKEY_USERS, L"HKEY_USERS"));
-	_registryRoot->AddChild(_HKCC = new RegKeyTreeNode(HKEY_CURRENT_CONFIG, L"HKEY_CURENT_CONFIG"));
+	OBJECT_ATTRIBUTES keyAttr;
+	UNICODE_STRING keyName;
+	RtlInitUnicodeString(&keyName, L"\\REGISTRY");
+
+	InitializeObjectAttributes(&keyAttr, &keyName, OBJ_CASE_INSENSITIVE, nullptr, nullptr);
+	HANDLE h;
+	auto status = NtOpenKey(&h, KEY_READ | KEY_ENUMERATE_SUB_KEYS, &keyAttr);
+	ATLASSERT(NT_SUCCESS(status));
+
+	_registryRoot = new RegKeyTreeNode(nullptr, L"REGISTRY", (HKEY)h);
+
+	_stdRegistryRoot = new TreeNodeBase(L"Standard Registry");
+	_stdRegistryRoot->AddChild(_HKCR = new RegKeyTreeNode(HKEY_CLASSES_ROOT, L"HKEY_CLASSES_ROOT", HKEY_CLASSES_ROOT));
+	_stdRegistryRoot->AddChild(_HKCU = new RegKeyTreeNode(HKEY_CURRENT_USER, L"HKEY_CURRENT_USER", HKEY_CURRENT_USER));
+	_stdRegistryRoot->AddChild(_HKLM = new RegKeyTreeNode(HKEY_LOCAL_MACHINE, L"HKEY_LOCAL_MACHINE", HKEY_LOCAL_MACHINE));
+	_stdRegistryRoot->AddChild(_HKUsers = new RegKeyTreeNode(HKEY_USERS, L"HKEY_USERS", HKEY_USERS));
+	_stdRegistryRoot->AddChild(_HKCC = new RegKeyTreeNode(HKEY_CURRENT_CONFIG, L"HKEY_CURENT_CONFIG", HKEY_CURRENT_CONFIG));
+
+	BuildHiveList();
+}
+
+void RegistryManager::BuildHiveList() {
+	_hiveList.RemoveAll();
+	CRegKey key;
+	if (ERROR_SUCCESS != key.Open(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Control\\hivelist", KEY_READ))
+		return;
+
+	WCHAR name[256];
+	WCHAR data[512];
+	DWORD type;
+	for (DWORD i = 0; ; i++) {
+		DWORD len = 256, datalen = 512;
+		if (ERROR_SUCCESS != ::RegEnumValue(key, i, name, &len, nullptr, &type, (BYTE*)& data, &datalen))
+			break;
+
+		_hiveList.SetAt(name, data);
+	}
 }
 
 void RegistryManager::BuildTreeView() {
-	auto hRoot = AddItem(_registryRoot, TVI_ROOT);
-	for (const auto& node : _registryRoot->GetChildNodes()) {
-		AddItem(node, hRoot);
-	}
+	TreeNodeBase* roots[] = { _registryRoot, _stdRegistryRoot };
 
-	_tree.Expand(hRoot, TVE_EXPAND);
-	_tree.SelectItem(hRoot);
+	for (auto& root : roots) {
+		auto hRoot = AddItem(root, TVI_ROOT);
+		for (const auto& node : root->GetChildNodes()) {
+			AddItem(node, hRoot);
+		}
+
+		_tree.Expand(hRoot, TVE_EXPAND);
+	}
+	_tree.SelectItem(_registryRoot->GetHItem());
 }
 
 LRESULT RegistryManager::HandleNotification(NMHDR* nmhdr) {
@@ -71,9 +107,16 @@ void RegistryManager::ExpandItem(TreeNodeBase* node) {
 
 LSTATUS RegistryManager::CreateKey(const CString& parent, const CString& name) {
 	CString hive, path;
-	GetHiveAndPath(parent, hive, path);
-
-	auto root = GetHiveNode(hive);
+	RegKeyTreeNode* root;
+	if (parent.Left(8) == L"REGISTRY") {
+		// real registry
+		path = parent.Mid(9);
+		root = _registryRoot;
+	}
+	else {
+		GetHiveAndPath(parent, hive, path);
+		root = GetHiveNode(hive);
+	}
 	ATLASSERT(root);
 
 	CRegKey key;
@@ -167,7 +210,24 @@ bool RegistryManager::IsExpanded(TreeNodeBase* node) const {
 	return _tree.GetItemData(hChild) != 0;
 }
 
+bool RegistryManager::IsHive(TreeNodeBase* node) const {
+	auto text = L"\\" + node->GetFullPath();
+	if (text.Left(9) == L"\\REGISTRY") {
+	}
+	else {
+		text.Replace(L"\\Standard Registry\\HKEY_LOCAL_MACHINE\\", L"\\REGISTRY\\MACHINE\\");
+		text.Replace(L"\\Standard Registry\\HKEY_USERS\\", L"\\REGISTRY\\USER\\");
+	}
+	if (_hiveList.Lookup(text))
+		return true;
+
+	return false;
+}
+
 HTREEITEM RegistryManager::AddItem(TreeNodeBase* item, HTREEITEM hParent, HTREEITEM hAfter) {
+	if (IsHive(item)) {
+		static_cast<RegKeyTreeNode*>(item)->SetHive(true);
+	}
 	auto hItem = _tree.InsertItem(item->GetText(), item->GetImage(), item->GetSelectedImage(), hParent, hAfter);
 	_tree.SetItemData(hItem, reinterpret_cast<LPARAM>(item));
 	item->_hItem = hItem;

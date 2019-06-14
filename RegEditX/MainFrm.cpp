@@ -28,13 +28,15 @@ BOOL CMainFrame::OnIdle() {
 void CMainFrame::UpdateUI() {
 	UIEnable(ID_EDIT_UNDO, m_CmdMgr.CanUndo());
 	UIEnable(ID_EDIT_REDO, m_CmdMgr.CanRedo());
+	BOOL canDelete;
 	if (m_splitter.GetActivePane() == 0)
-		UIEnable(ID_EDIT_DELETE, m_SelectedNode && m_SelectedNode->CanDelete());
+		UIEnable(ID_EDIT_DELETE, canDelete = m_SelectedNode && m_SelectedNode->CanDelete());
 	else
-		UIEnable(ID_EDIT_DELETE, m_view.CanDeleteSelected());
+		UIEnable(ID_EDIT_DELETE, canDelete = m_view.CanDeleteSelected());
 	UIEnable(ID_NEW_KEY, m_SelectedNode->GetNodeType() == TreeNodeType::RegistryKey);
 	UISetText(ID_EDIT_UNDO, (m_CmdMgr.CanUndo() ? L"Undo " + m_CmdMgr.GetUndoCommand()->GetName() : L"Undo") + CString(L"\tCtrl+Z"));
 	UISetText(ID_EDIT_REDO, (m_CmdMgr.CanRedo() ? L"Redo " + m_CmdMgr.GetRedoCommand()->GetName() : L"Redo") + CString(L"\tCtrl+Y"));
+	UIEnable(ID_EDIT_RENAME, canDelete);
 }
 
 LRESULT CMainFrame::OnTreeContextMenu(int, LPNMHDR, BOOL&) {
@@ -103,7 +105,8 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	m_LargeImages.Create(32, 32, ILC_COLOR32 | ILC_MASK, 6, 4);
 
 	UINT icons[] = {
-		IDI_FOLDER, IDI_FOLDER_OPEN, IDI_TEXT, IDI_BINARY
+		IDI_FOLDER, IDI_FOLDER_OPEN, IDI_TEXT, IDI_BINARY,
+		IDI_HIVE
 	};
 
 	for (auto id : icons) {
@@ -269,5 +272,8 @@ LRESULT CMainFrame::OnTreePaneClose(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWn
 }
 
 LRESULT CMainFrame::OnDelete(WORD, WORD, HWND, BOOL&) {
-	return LRESULT();
+	// delete key
+	ATLASSERT(m_SelectedNode && m_SelectedNode->GetNodeType() == TreeNodeType::RegistryKey);
+
+	return 0;
 }

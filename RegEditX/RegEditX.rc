@@ -215,6 +215,8 @@ IDI_BINARY              ICON                    "res\\binary.ico"
 
 IDI_TEXT                ICON                    "res\\text.ico"
 
+IDI_HIVE                ICON                    "res\\hive.ico"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -242,6 +244,15 @@ BEGIN
     LTEXT           "Key Name:",IDC_STATIC,7,14,36,8
 END
 
+IDD_INTVALUE DIALOGEX 0, 0, 309, 99
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Edit Value"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,96,78,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,197,78,50,14
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -265,6 +276,14 @@ BEGIN
         RIGHTMARGIN, 236
         TOPMARGIN, 7
         BOTTOMMARGIN, 65
+    END
+
+    IDD_INTVALUE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 302
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 92
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -344,6 +363,11 @@ BEGIN
 END
 
 IDD_ABOUTBOX AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_INTVALUE AFX_DIALOG_LAYOUT
 BEGIN
     0
 END

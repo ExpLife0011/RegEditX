@@ -2,9 +2,9 @@
 
 #include "TreeNode.h"
 
-class RegKeyTreeNode final : public TreeNodeBase {
+class RegKeyTreeNode : public TreeNodeBase {
 public:
-	RegKeyTreeNode(HKEY hive, const CString& text, HKEY hKey = nullptr) : TreeNodeBase(text, nullptr), _key(hKey ? hKey : hive), _root(hive) {}
+	RegKeyTreeNode(HKEY hive, const CString& text, HKEY hKey) : TreeNodeBase(text, nullptr), _key(hKey), _root(hive) {}
 
 	virtual TreeNodeType GetNodeType() const {
 		return TreeNodeType::RegistryKey;
@@ -19,13 +19,26 @@ public:
 	bool HasChildren() const override;
 	bool CanDelete() const override;
 
+	int GetImage() const override {
+		return _hive ? 4 : 0;
+	}
+
+	int GetSelectedImage() const override {
+		return _hive ? 4 : 1;
+	}
+
 	CRegKey* GetKey() {
 		return &_key;
+	}
+
+	void SetHive(bool hive) {
+		_hive = hive;
 	}
 
 private:
 	mutable CRegKey _key;
 	HKEY _root;
 	bool _expanded{ false };
+	bool _hive{ false };
 };
 

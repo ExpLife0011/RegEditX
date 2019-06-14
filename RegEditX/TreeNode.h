@@ -8,7 +8,7 @@ enum class TreeNodeType {
 struct TreeNodeBase {
 	friend class RegistryManager;
 
-	TreeNodeBase(const CString& text, TreeNodeBase* parent = nullptr) : _parentNode(parent), _text(text) {}
+	TreeNodeBase(const CString& text, TreeNodeBase* parent = nullptr) : _parentNode(parent), _text(text), _full(text) {}
 
 	virtual ~TreeNodeBase() {}
 
