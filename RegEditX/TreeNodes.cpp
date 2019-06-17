@@ -43,5 +43,5 @@ bool RegKeyTreeNode::HasChildren() const {
 }
 
 bool RegKeyTreeNode::CanDelete() const {
-	return (ULONG_PTR)_key.m_hKey < (ULONG_PTR)(1 << 24);
+	return (ULONG_PTR)_key.m_hKey < (ULONG_PTR)(1 << 24) && !_hive;
 }

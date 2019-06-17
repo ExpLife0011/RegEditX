@@ -20,6 +20,7 @@ public:
 	RegKeyTreeNode* GetHiveNode(const CString& name) const;
 	bool IsExpanded(TreeNodeBase* node) const;
 	bool IsHive(TreeNodeBase* node) const;
+	void GetHiveAndPath(const CString& parent, CString& hive, CString& path);
 
 private:
 	friend class CMainFrame;
@@ -27,7 +28,6 @@ private:
 	void BuildHiveList();
 
 	HTREEITEM AddItem(TreeNodeBase* item, HTREEITEM hParent, HTREEITEM hAfter = TVI_LAST);
-	void GetHiveAndPath(const CString& parent, CString& hive, CString& path);
 
 	RegKeyTreeNode* _registryRoot;
 	TreeNodeBase* _stdRegistryRoot;

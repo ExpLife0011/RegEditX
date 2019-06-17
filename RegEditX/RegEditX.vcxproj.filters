@@ -16,6 +16,12 @@
     <Filter Include="Commands">
       <UniqueIdentifier>{d644059d-f705-47bf-9068-526bfb11664d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Details">
+      <UniqueIdentifier>{3ad0206e-3808-4133-ae2a-9c066664d2e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Dialogs">
+      <UniqueIdentifier>{87872ab2-ccc4-4141-85a2-c9df3b335869}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -28,9 +34,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="View.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="AboutDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="RegistryManager.cpp">
@@ -57,6 +60,18 @@
     <ClCompile Include="NewKeyDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ServiceDetailsProvider.cpp">
+      <Filter>Details</Filter>
+    </ClCompile>
+    <ClCompile Include="RegHelper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AboutDlg.cpp">
+      <Filter>Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="IntValueDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -66,9 +81,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="View.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="AboutDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
@@ -105,6 +117,21 @@
       <Filter>Commands</Filter>
     </ClInclude>
     <ClInclude Include="NewKeyDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IDetailsProvider.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ServiceDetailsProvider.h">
+      <Filter>Details</Filter>
+    </ClInclude>
+    <ClInclude Include="RegHelper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AboutDlg.h">
+      <Filter>Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="IntValueDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

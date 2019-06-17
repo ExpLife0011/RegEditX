@@ -14,9 +14,12 @@
 #define IDR_CONTEXT                     207
 #define IDD_NEWKEY                      208
 #define IDI_HIVE                        211
-#define IDD_DIALOG1                     212
 #define IDD_INTVALUE                    212
 #define IDC_NAME                        1000
+#define IDC_EDIT1                       1001
+#define IDC_VALUE                       1001
+#define IDC_RADIO1                      1002
+#define IDC_RADIO2                      1003
 #define ID_VIEW_TREEPANE                32774
 #define ID_OPTIONS_ALWAYSONTOP          32775
 #define ID_VIEW_TREEFONT                32776
@@ -34,14 +37,15 @@
 #define ID_NEW_BINARYVALUE              32788
 #define ID_EDIT_NEW                     32789
 #define ID_VIEW_PROPERTIES              32790
+#define ID_FILE_EXPORT                  32791
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        214
-#define _APS_NEXT_COMMAND_VALUE         32791
-#define _APS_NEXT_CONTROL_VALUE         1001
+#define _APS_NEXT_COMMAND_VALUE         32792
+#define _APS_NEXT_CONTROL_VALUE         1004
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

@@ -21,30 +21,31 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <ProjectGuid>{23095DA9-081D-48B3-8899-250063693DDC}</ProjectGuid>
+    <WindowsTargetPlatformVersion>10.0.18362.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -226,13 +227,16 @@
   <ItemGroup>
     <ClCompile Include="AboutDlg.cpp" />
     <ClCompile Include="AppCommandBase.cpp" />
+    <ClCompile Include="IntValueDlg.cpp" />
     <ClCompile Include="NewKeyDlg.cpp" />
     <ClCompile Include="CommandManager.cpp" />
     <ClCompile Include="CreateNewKeyCommand.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="RegEditX.cpp" />
+    <ClCompile Include="RegHelper.cpp" />
     <ClCompile Include="RegistryManager.cpp" />
     <ClCompile Include="RenameKeyCommand.cpp" />
+    <ClCompile Include="ServiceDetailsProvider.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -247,15 +251,19 @@
     <ClInclude Include="AboutDlg.h" />
     <ClInclude Include="AppCommandBase.h" />
     <ClInclude Include="AppContext.h" />
+    <ClInclude Include="IDetailsProvider.h" />
+    <ClInclude Include="IntValueDlg.h" />
     <ClInclude Include="NewKeyDlg.h" />
     <ClInclude Include="CommandManager.h" />
     <ClInclude Include="CreateNewKeyCommand.h" />
     <ClInclude Include="Internals.h" />
     <ClInclude Include="ITreeOperations.h" />
     <ClInclude Include="MainFrm.h" />
+    <ClInclude Include="RegHelper.h" />
     <ClInclude Include="RegistryManager.h" />
     <ClInclude Include="RenameKeyCommand.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="ServiceDetailsProvider.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="TreeNode.h" />
     <ClInclude Include="TreeNodes.h" />
@@ -280,12 +288,12 @@
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\packages\wtl.10.0.8356\build\native\wtl.targets" Condition="Exists('..\packages\wtl.10.0.8356\build\native\wtl.targets')" />
+    <Import Project="..\packages\wtl.10.0.9163\build\native\wtl.targets" Condition="Exists('..\packages\wtl.10.0.9163\build\native\wtl.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\wtl.10.0.8356\build\native\wtl.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\wtl.10.0.8356\build\native\wtl.targets'))" />
+    <Error Condition="!Exists('..\packages\wtl.10.0.9163\build\native\wtl.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\wtl.10.0.9163\build\native\wtl.targets'))" />
   </Target>
 </Project>

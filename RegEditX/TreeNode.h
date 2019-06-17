@@ -36,6 +36,8 @@ struct TreeNodeBase {
 		return -1;
 	}
 
+	virtual void Refresh() {}
+
 	virtual int GetSelectedImage() const {
 		return 1;
 	}

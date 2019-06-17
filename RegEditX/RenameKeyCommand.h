@@ -2,7 +2,8 @@
 
 #include "AppCommandBase.h"
 
-class RenameKeyCommand : AppCommandBase {
+class RenameKeyCommand : public AppCommandBase {
+public:
 	RenameKeyCommand(const CString& path, const CString& newname);
 
 	bool Execute() override;

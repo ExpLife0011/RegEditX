@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "resource.h"
 #include "RegistryManager.h"
 #include "TreeNodes.h"
 #include "View.h"
@@ -74,7 +75,7 @@ LRESULT RegistryManager::HandleNotification(NMHDR* nmhdr) {
 
 			auto node = reinterpret_cast<TreeNodeBase*>(_tree.GetItemData(hItem));
 			ATLASSERT(node);
-			if(node->HasChildren())
+			if (node->HasChildren())
 				ExpandItem(node);
 			break;
 	}
@@ -124,11 +125,11 @@ LSTATUS RegistryManager::CreateKey(const CString& parent, const CString& name) {
 	if (status != ERROR_SUCCESS)
 		return status;
 
-	auto parentNode = FindNode(root, parent);
+	auto parentNode = FindNode(root, path);
 	ATLASSERT(parentNode);
 	auto node = new RegKeyTreeNode(*root->GetKey(), name, key.Detach());
 	parentNode->AddChild(node);
-	if(IsExpanded(parentNode))
+	if (IsExpanded(parentNode))
 		AddItem(node, parentNode->GetHItem());
 	_view.Update(parentNode, true);
 
@@ -137,8 +138,16 @@ LSTATUS RegistryManager::CreateKey(const CString& parent, const CString& name) {
 
 LSTATUS RegistryManager::DeleteKey(const CString& parent, const CString& name) {
 	CString hive, path;
-	GetHiveAndPath(parent, hive, path);
-	auto root = GetHiveNode(hive);
+	RegKeyTreeNode* root;
+	if (parent.Left(8) == L"REGISTRY") {
+		// real registry
+		path = parent.Mid(9);
+		root = _registryRoot;
+	}
+	else {
+		GetHiveAndPath(parent, hive, path);
+		root = GetHiveNode(hive);
+	}
 	ATLASSERT(root);
 
 	CRegKey key;
@@ -150,7 +159,7 @@ LSTATUS RegistryManager::DeleteKey(const CString& parent, const CString& name) {
 	if (status != ERROR_SUCCESS)
 		return status;
 
-	auto parentNode = FindNode(root, parent);
+	auto parentNode = FindNode(root, path);
 	ATLASSERT(parentNode);
 	auto node = parentNode->RemoveChild(name);
 	ATLASSERT(node);
@@ -161,10 +170,10 @@ LSTATUS RegistryManager::DeleteKey(const CString& parent, const CString& name) {
 }
 
 TreeNodeBase* RegistryManager::FindNode(TreeNodeBase* root, const CString& path) const {
-	int index = 1;
-	auto name = path.Tokenize(L"\\", index);
-	for(;;) {
-		name = path.Tokenize(L"\\", index);
+	int index = 0;
+	//auto name = path.Tokenize(L"\\", index);
+	for (;;) {
+		auto name = path.Tokenize(L"\\", index);
 		if (index < 0)
 			break;
 
@@ -234,19 +243,21 @@ HTREEITEM RegistryManager::AddItem(TreeNodeBase* item, HTREEITEM hParent, HTREEI
 	if (item->HasChildren()) {
 		_tree.InsertItem(L"***", hItem, TVI_LAST);
 	}
-	_tree.EnsureVisible(hItem);
+	//_tree.EnsureVisible(hItem);
 	return hItem;
 }
 
 void RegistryManager::GetHiveAndPath(const CString& parent, CString& hive, CString& path) {
-	hive = parent.Mid(1, parent.Find(L'\\', 6) - 1);
-	path = parent.Mid(hive.GetLength() + 2);
+	auto firstSlash = parent.Find('\\') + 1;
+	auto secondSlash = parent.Find(L'\\', firstSlash);
+	hive = parent.Mid(firstSlash, parent.Find(L'\\', firstSlash + 1) - firstSlash);
+	path = parent.Mid(secondSlash + 1);
 }
 
 bool RegistryManager::SelectNode(TreeNodeBase* parent, PCWSTR name) {
 	const auto& nodes = parent->GetChildNodes();
 	_tree.Expand(parent->GetHItem(), TVE_EXPAND);
-	for(const auto& node : nodes)
+	for (const auto& node : nodes)
 		if (node->GetText().Compare(name) == 0) {
 			ATLASSERT(node->GetHItem());
 			if (_tree.SelectItem(node->GetHItem())) {

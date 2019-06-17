@@ -43,6 +43,20 @@ int CView::GetRegTypeIcon(DWORD type) {
 	return 3;
 }
 
+CString CView::GetKeyDetails(TreeNodeBase* node) {
+	ATLASSERT(node->GetNodeType() == TreeNodeType::RegistryKey);
+	CString text;
+	auto keyNode = static_cast<RegKeyTreeNode*>(node);
+	BYTE buffer[1024];
+	auto info = reinterpret_cast<KEY_FULL_INFORMATION*>(buffer);
+	ULONG len;
+	auto status = ::NtQueryKey(*keyNode->GetKey(), KeyFullInformation, info, sizeof(buffer), &len);
+	if (NT_SUCCESS(status)) {
+		text.Format(L"Subkeys: %d  Values: %d\n", info->SubKeys, info->Values);
+	}
+	return text;
+}
+
 CString CView::GetDataAsString(const ListItem& item) {
 	auto regNode = static_cast<RegKeyTreeNode*>(m_CurrentNode);
 	ATLASSERT(regNode);
@@ -223,6 +237,11 @@ LRESULT CView::OnGetDispInfo(int, LPNMHDR nmhdr, BOOL&) {
 					::StringCchCopy(item.pszText, item.cchTextMax, dt.Format(L"%c"));
 				}
 				break;
+
+			case 5:	// details
+				if (data.TreeNode)
+					::StringCchCopy(item.pszText, item.cchTextMax, GetKeyDetails(data.TreeNode));
+				break;
 		}
 	}
 	if (lv->item.mask & LVIF_IMAGE) {
@@ -254,15 +273,25 @@ LRESULT CView::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&) {
 
 	SetExtendedListViewStyle(LVS_EX_DOUBLEBUFFER | LVS_EX_FULLROWSELECT | LVS_EX_INFOTIP | LVS_EX_LABELTIP);
 
-	InsertColumn(0, L"Name", LVCFMT_LEFT, 300);
-	InsertColumn(1, L"Type", LVCFMT_LEFT, 100);
-	InsertColumn(2, L"Size (Bytes)", LVCFMT_RIGHT, 120);
-	InsertColumn(3, L"Value", LVCFMT_LEFT, 250);
-	InsertColumn(4, L"Last Write", LVCFMT_LEFT, 150);
+	using PGetDpiForWindow = UINT  (__stdcall*)(HWND);
+	static PGetDpiForWindow pGetDpiForWindow = (PGetDpiForWindow)::GetProcAddress(::GetModuleHandle(L"user32"), "GetDpiForWindow");
+	auto dpi = pGetDpiForWindow ? pGetDpiForWindow(m_hWnd) : 96;
+	InsertColumn(0, L"Name", LVCFMT_LEFT, 300 * dpi / 96);
+	InsertColumn(1, L"Type", LVCFMT_LEFT, 100 * dpi / 96);
+	InsertColumn(2, L"Size (Bytes)", LVCFMT_RIGHT, 100 * dpi / 96);
+	InsertColumn(3, L"Value", LVCFMT_LEFT, 230 * dpi / 96);
+	InsertColumn(4, L"Last Write", LVCFMT_LEFT, 150 * dpi / 96);
+	InsertColumn(5, L"Details", LVCFMT_LEFT, 200 * dpi / 96);
 
 	return 0;
 }
 
 LRESULT CView::OnDelete(WORD, WORD, HWND, BOOL&) {
 	return LRESULT();
+}
+
+LRESULT CView::OnEditRename(WORD, WORD, HWND, BOOL&) {
+	m_Edit = EditLabel(GetSelectedIndex());
+
+	return 0;
 }

@@ -10,6 +10,7 @@
 #include "MainFrm.h"
 #include "CreateNewKeyCommand.h"
 #include "NewKeyDlg.h"
+#include "RenameKeyCommand.h"
 
 BOOL CMainFrame::PreTranslateMessage(MSG* pMsg) {
 	if (m_view.PreTranslateMessage(pMsg))
@@ -81,8 +82,14 @@ LRESULT CMainFrame::OnTreeDeleteItem(int, LPNMHDR nmhdr, BOOL&) {
 	return 0;
 }
 
-LRESULT CMainFrame::OnTreeItemExpanded(int, LPNMHDR, BOOL&) {
-	return LRESULT();
+LRESULT CMainFrame::OnEndRename(int, LPNMHDR, BOOL&) {
+	CString newName;
+	m_Edit.GetWindowText(newName);
+
+	auto cmd = std::make_shared<RenameKeyCommand>(m_SelectedNode->GetFullPath(), newName);
+	m_CmdMgr.AddCommand(cmd);
+
+	return 0;
 }
 
 LRESULT CMainFrame::OnTreeItemExpanding(int, LPNMHDR nmhdr, BOOL&) {
@@ -132,7 +139,7 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	//m_pane.SetPaneContainerExtendedStyle(PANECNT_NOBORDER);
 	//m_pane.Create(m_splitter, _T("Local System"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
 	m_treeview.Create(m_splitter, rcDefault, nullptr, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
-		TVS_HASLINES | TVS_LINESATROOT | TVS_HASBUTTONS | TVS_SHOWSELALWAYS, WS_EX_CLIENTEDGE);
+		TVS_HASLINES | TVS_LINESATROOT | TVS_HASBUTTONS | TVS_SHOWSELALWAYS | TVS_EDITLABELS, WS_EX_CLIENTEDGE);
 	//m_pane.SetClient(m_treeview);
 	m_treeview.SetExtendedStyle(TVS_EX_DOUBLEBUFFER | 0*TVS_EX_MULTISELECT, 0);
 	m_treeview.SetImageList(m_SmallImages.m_hImageList, TVSIL_NORMAL);
@@ -160,8 +167,6 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	m_RegMgr.BuildTreeView();
 	m_view.Init(&m_RegMgr);
 
-
-
 	return 0;
 }
 
@@ -174,6 +179,12 @@ LRESULT CMainFrame::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
 	bHandled = FALSE;
 	return 1;
+}
+
+LRESULT CMainFrame::OnEditRename(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	m_Edit = m_treeview.EditLabel(m_treeview.GetSelectedItem());
+
+	return 0;
 }
 
 LRESULT CMainFrame::OnFileExit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
