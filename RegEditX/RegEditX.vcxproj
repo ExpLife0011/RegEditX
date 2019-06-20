@@ -227,6 +227,7 @@
   <ItemGroup>
     <ClCompile Include="AboutDlg.cpp" />
     <ClCompile Include="AppCommandBase.cpp" />
+    <ClCompile Include="FormatHelper.cpp" />
     <ClCompile Include="IntValueDlg.cpp" />
     <ClCompile Include="NewKeyDlg.cpp" />
     <ClCompile Include="CommandManager.cpp" />
@@ -251,6 +252,8 @@
     <ClInclude Include="AboutDlg.h" />
     <ClInclude Include="AppCommandBase.h" />
     <ClInclude Include="AppContext.h" />
+    <ClInclude Include="ChangeValueCommand.h" />
+    <ClInclude Include="FormatHelper.h" />
     <ClInclude Include="IDetailsProvider.h" />
     <ClInclude Include="IntValueDlg.h" />
     <ClInclude Include="NewKeyDlg.h" />

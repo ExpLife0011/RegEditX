@@ -32,12 +32,15 @@ void CMainFrame::UpdateUI() {
 	BOOL canDelete;
 	if (m_splitter.GetActivePane() == 0)
 		UIEnable(ID_EDIT_DELETE, canDelete = m_SelectedNode && m_SelectedNode->CanDelete());
-	else
+	else {
 		UIEnable(ID_EDIT_DELETE, canDelete = m_view.CanDeleteSelected());
+		UIEnable(ID_EDIT_MODIFYVALUE, m_view.CanEditValue());
+	}
 	UIEnable(ID_NEW_KEY, m_SelectedNode->GetNodeType() == TreeNodeType::RegistryKey);
 	UISetText(ID_EDIT_UNDO, (m_CmdMgr.CanUndo() ? L"Undo " + m_CmdMgr.GetUndoCommand()->GetName() : L"Undo") + CString(L"\tCtrl+Z"));
 	UISetText(ID_EDIT_REDO, (m_CmdMgr.CanRedo() ? L"Redo " + m_CmdMgr.GetRedoCommand()->GetName() : L"Redo") + CString(L"\tCtrl+Y"));
 	UIEnable(ID_EDIT_RENAME, canDelete);
+	UISetCheck(ID_EDIT_MODIFY, m_AllowModify);
 }
 
 LRESULT CMainFrame::OnTreeContextMenu(int, LPNMHDR, BOOL&) {
@@ -165,9 +168,13 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	pLoop->AddIdleHandler(this);
 
 	m_RegMgr.BuildTreeView();
-	m_view.Init(&m_RegMgr);
+	m_view.Init(&m_RegMgr, this);
 
 	return 0;
+}
+
+void CMainFrame::AddCommand(std::shared_ptr<AppCommandBase> cmd, bool execute) {
+	m_CmdMgr.AddCommand(cmd, execute);
 }
 
 LRESULT CMainFrame::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
@@ -231,7 +238,7 @@ LRESULT CMainFrame::OnEditRedo(WORD, WORD, HWND, BOOL&) {
 	if (!m_CmdMgr.CanRedo())
 		return 0;
 	m_CmdMgr.Redo();
-
+	m_view.Update(m_SelectedNode, true);
 
 	return 0;
 }
@@ -241,7 +248,7 @@ LRESULT CMainFrame::OnEditUndo(WORD, WORD, HWND, BOOL&) {
 	if (!m_CmdMgr.CanUndo())
 		return 0;
 	m_CmdMgr.Undo();
-
+	m_view.Update(m_SelectedNode, true);
 
 	return 0;
 }
@@ -285,6 +292,12 @@ LRESULT CMainFrame::OnTreePaneClose(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWn
 LRESULT CMainFrame::OnDelete(WORD, WORD, HWND, BOOL&) {
 	// delete key
 	ATLASSERT(m_SelectedNode && m_SelectedNode->GetNodeType() == TreeNodeType::RegistryKey);
+
+	return 0;
+}
+
+LRESULT CMainFrame::OnEditModify(WORD, WORD, HWND, BOOL&) {
+	m_AllowModify = !m_AllowModify;
 
 	return 0;
 }

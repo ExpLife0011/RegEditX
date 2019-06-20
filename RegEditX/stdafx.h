@@ -30,7 +30,7 @@ extern CAppModule _Module;
 #include <atltime.h>
 #include <atlddx.h>
 #include <atlcoll.h>
-
+#include <atlcrack.h>
 #include <unordered_map>
 #include <memory>
 #include <winternl.h>

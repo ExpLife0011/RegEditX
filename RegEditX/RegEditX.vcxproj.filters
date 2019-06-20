@@ -57,9 +57,6 @@
     <ClCompile Include="RenameKeyCommand.cpp">
       <Filter>Commands</Filter>
     </ClCompile>
-    <ClCompile Include="NewKeyDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ServiceDetailsProvider.cpp">
       <Filter>Details</Filter>
     </ClCompile>
@@ -70,6 +67,12 @@
       <Filter>Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="IntValueDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NewKeyDlg.cpp">
+      <Filter>Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="FormatHelper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -116,9 +119,6 @@
     <ClInclude Include="RenameKeyCommand.h">
       <Filter>Commands</Filter>
     </ClInclude>
-    <ClInclude Include="NewKeyDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="IDetailsProvider.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -132,7 +132,16 @@
       <Filter>Dialogs</Filter>
     </ClInclude>
     <ClInclude Include="IntValueDlg.h">
+      <Filter>Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="NewKeyDlg.h">
+      <Filter>Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="FormatHelper.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ChangeValueCommand.h">
+      <Filter>Commands</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

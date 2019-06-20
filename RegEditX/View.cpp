@@ -8,6 +8,8 @@
 #include "TreeNodes.h"
 #include "Internals.h"
 #include "ITreeOperations.h"
+#include "IntValueDlg.h"
+#include "ChangeValueCommand.h"
 
 #pragma comment(lib, "ntdll")
 
@@ -129,10 +131,28 @@ bool CView::CanDeleteSelected() const {
 	if (GetSelectedCount() == 0)
 		return false;
 
-	auto& item = m_Items[GetSelectedIndex()];
+	auto& item = GetItem(GetSelectedIndex());
 	if (item.TreeNode == nullptr)
 		return true;
 	return item.TreeNode->CanDelete();
+}
+
+bool CView::CanEditValue() const {
+	auto selected = GetSelectedIndex();
+	if (selected < 0)
+		return false;
+
+	return GetItem(selected).TreeNode == nullptr;
+}
+
+ListItem & CView::GetItem(int index) {
+	ATLASSERT(index >= 0 && index < m_Items.size());
+	return m_Items[index];
+}
+
+const ListItem & CView::GetItem(int index) const {
+	ATLASSERT(index >= 0 && index < m_Items.size());
+	return m_Items[index];
 }
 
 void CView::Update(TreeNodeBase* node, bool ifTheSame) {
@@ -190,8 +210,9 @@ void CView::Update(TreeNodeBase* node, bool ifTheSame) {
 	RedrawItems(0, count);
 }
 
-void CView::Init(ITreeOperations* to) {
+void CView::Init(ITreeOperations* to, IMainApp* app) {
 	m_TreeOperations = to;
+	m_App = app;
 }
 
 LRESULT CView::OnGetDispInfo(int, LPNMHDR nmhdr, BOOL&) {
@@ -201,7 +222,7 @@ LRESULT CView::OnGetDispInfo(int, LPNMHDR nmhdr, BOOL&) {
 	auto& item = lv->item;
 	auto index = item.iItem;
 	auto col = item.iSubItem;
-	auto& data = m_Items[index];
+	auto& data = GetItem(index);
 
 	if (lv->item.mask & LVIF_TEXT) {
 		switch (col) {
@@ -254,15 +275,18 @@ LRESULT CView::OnGetDispInfo(int, LPNMHDR nmhdr, BOOL&) {
 	return 0;
 }
 
-LRESULT CView::OnDoubleClick(int, LPNMHDR nmhdr, BOOL&) {
+LRESULT CView::OnDoubleClick(int, LPNMHDR nmhdr, BOOL& handled) {
 	auto lv = reinterpret_cast<NMITEMACTIVATE*>(nmhdr);
 	if (m_Items.empty())
 		return 0;
 
-	auto& item = m_Items[lv->iItem];
+	auto& item = GetItem(lv->iItem);
 	if (item.TreeNode) {
 		// key
 		m_TreeOperations->SelectNode(m_CurrentNode, item.TreeNode->GetText());
+	}
+	else {
+		return OnModifyValue(0, 0, nullptr, handled);
 	}
 
 	return 0;
@@ -292,6 +316,38 @@ LRESULT CView::OnDelete(WORD, WORD, HWND, BOOL&) {
 
 LRESULT CView::OnEditRename(WORD, WORD, HWND, BOOL&) {
 	m_Edit = EditLabel(GetSelectedIndex());
+
+	return 0;
+}
+
+LRESULT CView::OnModifyValue(WORD, WORD, HWND, BOOL &) {
+	ATLASSERT(GetSelectedIndex() >= 0);
+	auto& item = GetItem(GetSelectedIndex());
+	ATLASSERT(item.TreeNode == nullptr);
+	ATLASSERT(m_CurrentNode->GetNodeType() == TreeNodeType::RegistryKey);
+
+	switch (item.ValueType) {
+		case REG_DWORD:
+		case REG_QWORD:
+		{
+			CIntValueDlg dlg;
+			auto regNode = static_cast<RegKeyTreeNode*>(m_CurrentNode);
+			auto key = regNode->GetKey();
+			ULONGLONG value = 0;
+			item.ValueName == REG_DWORD ? key->QueryDWORDValue(item.ValueName, (DWORD&)value) : key->QueryQWORDValue(item.ValueName, value);
+			dlg.SetValue(value);
+			dlg.SetName(item.ValueName, true);
+			if (dlg.DoModal() == IDOK) {
+				std::shared_ptr<AppCommandBase> cmd = std::make_shared<ChangeValueCommand<ULONGLONG>>(m_CurrentNode->GetFullPath(), item.ValueName, dlg.GetRealValue(), item.ValueType);
+				m_App->AddCommand(cmd);
+			}
+			break;
+		}
+
+		default:
+			ATLASSERT(false);
+			break;
+	}
 
 	return 0;
 }

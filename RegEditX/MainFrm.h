@@ -10,7 +10,9 @@
 class CMainFrame :
 	public CFrameWindowImpl<CMainFrame>,
 	public CUpdateUI<CMainFrame>,
-	public CMessageFilter, public CIdleHandler {
+	public CMessageFilter, 
+	public CIdleHandler,
+	public IMainApp {
 public:
 	DECLARE_FRAME_WND_CLASS(nullptr, IDR_MAINFRAME)
 
@@ -26,12 +28,12 @@ public:
 	CommandManager m_CmdMgr;
 	TreeNodeBase* m_SelectedNode;
 	CEdit m_Edit;
-
 	bool m_AllowModify{ false };
 
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	virtual BOOL OnIdle();
 	void UpdateUI();
+	void AddCommand(std::shared_ptr<AppCommandBase> cmd, bool execute = true) override;
 
 	BEGIN_UPDATE_UI_MAP(CMainFrame)
 		UPDATE_ELEMENT(ID_VIEW_TOOLBAR, UPDUI_MENUPOPUP)
@@ -43,6 +45,8 @@ public:
 		UPDATE_ELEMENT(ID_EDIT_REDO, UPDUI_MENUPOPUP | UPDUI_TOOLBAR)
 		UPDATE_ELEMENT(ID_EDIT_DELETE, UPDUI_MENUPOPUP | UPDUI_TOOLBAR)
 		UPDATE_ELEMENT(ID_OPTIONS_ALWAYSONTOP, UPDUI_MENUPOPUP)
+		UPDATE_ELEMENT(ID_EDIT_MODIFYVALUE, UPDUI_MENUPOPUP)
+		UPDATE_ELEMENT(ID_EDIT_MODIFY, UPDUI_MENUPOPUP | UPDUI_TOOLBAR)
 	END_UPDATE_UI_MAP()
 
 	BEGIN_MSG_MAP(CMainFrame)
@@ -63,6 +67,7 @@ public:
 		COMMAND_ID_HANDLER(ID_OPTIONS_ALWAYSONTOP, OnAlwaysOnTop)
 		COMMAND_ID_HANDLER(ID_EDIT_DELETE, OnDelete)
 		COMMAND_ID_HANDLER(ID_EDIT_RENAME, OnEditRename)
+		COMMAND_ID_HANDLER(ID_EDIT_MODIFY, OnEditModify)
 		NOTIFY_CODE_HANDLER(TVN_DELETEITEM, OnTreeDeleteItem)
 		NOTIFY_CODE_HANDLER(TVN_ENDLABELEDIT, OnEndRename)
 		NOTIFY_CODE_HANDLER(TVN_ITEMEXPANDING, OnTreeItemExpanding)
@@ -88,6 +93,7 @@ public:
 	LRESULT OnEditRename(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnFileExit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnAlwaysOnTop(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnEditModify(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnViewToolBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnViewStatusBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnAppAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
