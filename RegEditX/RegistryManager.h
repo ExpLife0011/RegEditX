@@ -1,7 +1,7 @@
 #pragma once
 
 #include "TreeNodes.h"
-#include "ITreeOperations.h"
+#include "UICommon.h"
 #include "View.h"
 
 class RegistryManager : public ITreeOperations {
@@ -21,6 +21,7 @@ public:
 	bool IsExpanded(TreeNodeBase* node) const;
 	bool IsHive(TreeNodeBase* node) const;
 	void GetHiveAndPath(const CString& parent, CString& hive, CString& path);
+	void Refresh();
 
 private:
 	friend class CMainFrame;
@@ -28,6 +29,8 @@ private:
 	void BuildHiveList();
 
 	HTREEITEM AddItem(TreeNodeBase* item, HTREEITEM hParent, HTREEITEM hAfter = TVI_LAST);
+	void Refresh(TreeNodeBase* node);
+	void AddNewKeys(RegKeyTreeNode* node);
 
 	RegKeyTreeNode* _registryRoot;
 	TreeNodeBase* _stdRegistryRoot;

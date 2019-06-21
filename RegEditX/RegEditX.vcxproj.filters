@@ -66,14 +66,14 @@
     <ClCompile Include="AboutDlg.cpp">
       <Filter>Dialogs</Filter>
     </ClCompile>
-    <ClCompile Include="IntValueDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="NewKeyDlg.cpp">
       <Filter>Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="FormatHelper.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IntValueDlg.cpp">
+      <Filter>Dialogs</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -99,9 +99,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Internals.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ITreeOperations.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AppCommandBase.h">
@@ -143,6 +140,9 @@
     <ClInclude Include="ChangeValueCommand.h">
       <Filter>Commands</Filter>
     </ClInclude>
+    <ClInclude Include="UICommon.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="RegEditX.rc">
@@ -166,9 +166,6 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\text.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\toolbar1.bmp">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\commandbar.bmp">

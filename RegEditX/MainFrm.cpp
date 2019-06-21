@@ -29,17 +29,19 @@ BOOL CMainFrame::OnIdle() {
 void CMainFrame::UpdateUI() {
 	UIEnable(ID_EDIT_UNDO, m_CmdMgr.CanUndo());
 	UIEnable(ID_EDIT_REDO, m_CmdMgr.CanRedo());
-	BOOL canDelete;
+	BOOL canDelete = m_AllowModify;
 	if (m_splitter.GetActivePane() == 0)
-		UIEnable(ID_EDIT_DELETE, canDelete = m_SelectedNode && m_SelectedNode->CanDelete());
+		UIEnable(ID_EDIT_DELETE, canDelete = canDelete && m_SelectedNode && m_SelectedNode->CanDelete());
 	else {
-		UIEnable(ID_EDIT_DELETE, canDelete = m_view.CanDeleteSelected());
-		UIEnable(ID_EDIT_MODIFYVALUE, m_view.CanEditValue());
+		UIEnable(ID_EDIT_DELETE, canDelete = canDelete && m_view.CanDeleteSelected());
+		UIEnable(ID_EDIT_MODIFYVALUE, m_AllowModify && m_view.CanEditValue());
 	}
-	UIEnable(ID_NEW_KEY, m_SelectedNode->GetNodeType() == TreeNodeType::RegistryKey);
+	UIEnable(ID_EDIT_CUT, canDelete);
+	UIEnable(ID_EDIT_PASTE, m_AllowModify && CanPaste());
+	UIEnable(ID_NEW_KEY, m_AllowModify && m_SelectedNode->GetNodeType() == TreeNodeType::RegistryKey);
 	UISetText(ID_EDIT_UNDO, (m_CmdMgr.CanUndo() ? L"Undo " + m_CmdMgr.GetUndoCommand()->GetName() : L"Undo") + CString(L"\tCtrl+Z"));
 	UISetText(ID_EDIT_REDO, (m_CmdMgr.CanRedo() ? L"Redo " + m_CmdMgr.GetRedoCommand()->GetName() : L"Redo") + CString(L"\tCtrl+Y"));
-	UIEnable(ID_EDIT_RENAME, canDelete);
+	UIEnable(ID_EDIT_RENAME, m_AllowModify && canDelete);
 	UISetCheck(ID_EDIT_MODIFY, m_AllowModify);
 }
 
@@ -86,6 +88,9 @@ LRESULT CMainFrame::OnTreeDeleteItem(int, LPNMHDR nmhdr, BOOL&) {
 }
 
 LRESULT CMainFrame::OnEndRename(int, LPNMHDR, BOOL&) {
+	if (!m_Edit.IsWindow())
+		return 0;
+
 	CString newName;
 	m_Edit.GetWindowText(newName);
 
@@ -173,8 +178,8 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	return 0;
 }
 
-void CMainFrame::AddCommand(std::shared_ptr<AppCommandBase> cmd, bool execute) {
-	m_CmdMgr.AddCommand(cmd, execute);
+bool CMainFrame::AddCommand(std::shared_ptr<AppCommandBase> cmd, bool execute) {
+	return m_CmdMgr.AddCommand(cmd, execute);
 }
 
 LRESULT CMainFrame::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
@@ -301,3 +306,21 @@ LRESULT CMainFrame::OnEditModify(WORD, WORD, HWND, BOOL&) {
 
 	return 0;
 }
+
+LRESULT CMainFrame::OnRefresh(WORD, WORD, HWND, BOOL&) {
+	CWaitCursor wait;
+
+	RegistryManager::Get().Refresh();
+	m_view.Update(m_SelectedNode, true);
+
+	return 0;
+}
+
+void CMainFrame::ShowCommandError(PCWSTR message) {
+	AtlMessageBox(m_hWnd, message ? message : L"Error", IDR_MAINFRAME, MB_ICONERROR);
+}
+
+bool CMainFrame::CanPaste() const {
+	return false;
+}
+

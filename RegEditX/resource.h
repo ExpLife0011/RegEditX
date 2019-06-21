@@ -21,6 +21,8 @@
 #define IDC_DEC                         1003
 #define IDC_BIN                         1004
 #define IDC_EDIT1                       1005
+#define IDC_BUTTON1                     1006
+#define IDC_COLOR                       1006
 #define ID_VIEW_TREEPANE                32774
 #define ID_OPTIONS_ALWAYSONTOP          32775
 #define ID_VIEW_TREEFONT                32776
@@ -40,14 +42,15 @@
 #define ID_VIEW_PROPERTIES              32790
 #define ID_FILE_EXPORT                  32791
 #define ID_EDIT_MODIFYVALUE             32792
+#define ID_EDIT_PROPERTIES              32793
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        214
-#define _APS_NEXT_COMMAND_VALUE         32793
-#define _APS_NEXT_CONTROL_VALUE         1006
+#define _APS_NEXT_COMMAND_VALUE         32794
+#define _APS_NEXT_CONTROL_VALUE         1007
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

@@ -10,11 +10,12 @@ bool CommandManager::CanRedo() const {
 	return !_redoList.empty();
 }
 
-void CommandManager::AddCommand(std::shared_ptr<AppCommandBase> command, bool execute) {
+bool CommandManager::AddCommand(std::shared_ptr<AppCommandBase> command, bool execute) {
 	_undoList.push_back(command);
 	_redoList.clear();
 	if (execute)
-		command->Execute();
+		return command->Execute();
+	return true;
 }
 
 bool CommandManager::Undo() {

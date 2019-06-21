@@ -260,7 +260,7 @@
     <ClInclude Include="CommandManager.h" />
     <ClInclude Include="CreateNewKeyCommand.h" />
     <ClInclude Include="Internals.h" />
-    <ClInclude Include="ITreeOperations.h" />
+    <ClInclude Include="UICommon.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="RegHelper.h" />
     <ClInclude Include="RegistryManager.h" />
@@ -284,7 +284,6 @@
     <Image Include="res\RegEditX.ico" />
     <Image Include="res\text.ico" />
     <Image Include="res\toolbar.bmp" />
-    <Image Include="res\toolbar1.bmp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

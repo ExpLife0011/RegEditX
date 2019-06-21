@@ -33,7 +33,13 @@ public:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	virtual BOOL OnIdle();
 	void UpdateUI();
-	void AddCommand(std::shared_ptr<AppCommandBase> cmd, bool execute = true) override;
+	bool AddCommand(std::shared_ptr<AppCommandBase> cmd, bool execute = true) override;
+	void ShowCommandError(PCWSTR message = nullptr) override;
+	bool IsAllowModify() const override {
+		return m_AllowModify;
+	}
+
+	bool CanPaste() const;
 
 	BEGIN_UPDATE_UI_MAP(CMainFrame)
 		UPDATE_ELEMENT(ID_VIEW_TOOLBAR, UPDUI_MENUPOPUP)
@@ -46,6 +52,8 @@ public:
 		UPDATE_ELEMENT(ID_EDIT_DELETE, UPDUI_MENUPOPUP | UPDUI_TOOLBAR)
 		UPDATE_ELEMENT(ID_OPTIONS_ALWAYSONTOP, UPDUI_MENUPOPUP)
 		UPDATE_ELEMENT(ID_EDIT_MODIFYVALUE, UPDUI_MENUPOPUP)
+		UPDATE_ELEMENT(ID_EDIT_CUT, UPDUI_MENUPOPUP | UPDUI_TOOLBAR)
+		UPDATE_ELEMENT(ID_EDIT_PASTE, UPDUI_MENUPOPUP | UPDUI_TOOLBAR)
 		UPDATE_ELEMENT(ID_EDIT_MODIFY, UPDUI_MENUPOPUP | UPDUI_TOOLBAR)
 	END_UPDATE_UI_MAP()
 
@@ -66,6 +74,7 @@ public:
 		COMMAND_ID_HANDLER(ID_NEW_KEY, OnNewKey)
 		COMMAND_ID_HANDLER(ID_OPTIONS_ALWAYSONTOP, OnAlwaysOnTop)
 		COMMAND_ID_HANDLER(ID_EDIT_DELETE, OnDelete)
+		COMMAND_ID_HANDLER(ID_VIEW_REFRESH, OnRefresh)
 		COMMAND_ID_HANDLER(ID_EDIT_RENAME, OnEditRename)
 		COMMAND_ID_HANDLER(ID_EDIT_MODIFY, OnEditModify)
 		NOTIFY_CODE_HANDLER(TVN_DELETEITEM, OnTreeDeleteItem)
@@ -92,6 +101,7 @@ public:
 	LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT OnEditRename(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnFileExit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnRefresh(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnAlwaysOnTop(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnEditModify(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnViewToolBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);

@@ -36,8 +36,6 @@ struct TreeNodeBase {
 		return -1;
 	}
 
-	virtual void Refresh() {}
-
 	virtual int GetSelectedImage() const {
 		return 1;
 	}
@@ -49,6 +47,7 @@ struct TreeNodeBase {
 	TreeNodeBase* AddChild(TreeNodeBase* child);
 
 	TreeNodeBase* RemoveChild(const CString& name);
+	TreeNodeBase* RemoveChild(size_t index);
 
 	const std::vector<TreeNodeBase*>& GetChildNodes() const {
 		return _childNodes;
@@ -65,7 +64,7 @@ struct TreeNodeBase {
 	}
 
 	virtual bool IsExpanded() const {
-		return false;
+		return true;
 	}
 
 	virtual bool CanDelete() const {
@@ -83,9 +82,11 @@ struct TreeNodeBase {
 private:
 	void SetParent(TreeNodeBase* parent);
 
+protected:
+	std::vector<TreeNodeBase*> _childNodes;
+
 private:
 	CString _text, _full;
-	std::vector<TreeNodeBase*> _childNodes;
 	TreeNodeBase* _parentNode;
 	HTREEITEM _hItem{ nullptr };
 };

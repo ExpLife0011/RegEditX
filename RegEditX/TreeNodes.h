@@ -35,6 +35,10 @@ public:
 		_hive = hive;
 	}
 
+	HKEY GetRoot() {
+		return _root;
+	}
+
 private:
 	mutable CRegKey _key;
 	HKEY _root;

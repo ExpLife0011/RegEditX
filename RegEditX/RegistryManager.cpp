@@ -247,11 +247,74 @@ HTREEITEM RegistryManager::AddItem(TreeNodeBase* item, HTREEITEM hParent, HTREEI
 	return hItem;
 }
 
+void RegistryManager::Refresh(TreeNodeBase * node) {
+	if (!node->IsExpanded())
+		return;
+
+	ATLTRACE(L"RegistryManager::Refresh: %s\n", node->GetFullPath());
+
+	for (auto& child : node->GetChildNodes())
+		Refresh(child);
+
+	if (node->GetNodeType() == TreeNodeType::RegistryKey) {
+		auto regNode = static_cast<RegKeyTreeNode*>(node);
+		int deleted = 0;
+		ATLASSERT(*regNode->GetKey());
+		for (size_t i = 0; i < regNode->GetChildNodes().size(); i++) {
+			auto child = regNode->GetChildNodes()[i];
+			CRegKey subkey;
+			if (ERROR_FILE_NOT_FOUND == subkey.Open(*regNode->GetKey(), child->GetText(), KEY_READ)) {
+				regNode->RemoveChild(i);
+				_tree.DeleteItem(child->GetHItem());
+				i--;
+				deleted++;
+			}
+		}
+		BYTE buffer[2048];
+		auto info = reinterpret_cast<KEY_FULL_INFORMATION*>(buffer);
+		ULONG len;
+		if (NT_SUCCESS(::NtQueryKey(*regNode->GetKey(), KeyFullInformation, info, 2048, &len))) {
+			if (info->SubKeys != regNode->GetChildNodes().size()) {
+				// new keys
+				AddNewKeys(regNode);
+			}
+		}
+	}
+}
+
+void RegistryManager::AddNewKeys(RegKeyTreeNode * node) {
+	WCHAR name[128];
+	auto key = *node->GetKey();
+	FILETIME lastWrite;
+	for (DWORD index = 0; ; index++) {
+		DWORD len = 128;
+		if (!key || key.EnumKey(index, name, &len, &lastWrite) != ERROR_SUCCESS)
+			break;
+
+		if (!node->FindChild(name)) {
+			CRegKey subkey;
+			subkey.Open(key, name, KEY_QUERY_VALUE | KEY_ENUMERATE_SUB_KEYS);
+			auto newnode = new RegKeyTreeNode(node->GetRoot(), name, subkey.Detach());
+			node->AddChild(newnode);
+			AddItem(newnode, node->GetHItem());
+		}
+	}
+}
+
 void RegistryManager::GetHiveAndPath(const CString& parent, CString& hive, CString& path) {
 	auto firstSlash = parent.Find('\\') + 1;
 	auto secondSlash = parent.Find(L'\\', firstSlash);
 	hive = parent.Mid(firstSlash, parent.Find(L'\\', firstSlash + 1) - firstSlash);
 	path = parent.Mid(secondSlash + 1);
+}
+
+void RegistryManager::Refresh() {
+	_tree.LockWindowUpdate();
+
+	Refresh(_stdRegistryRoot);
+	Refresh(_registryRoot);
+
+	_tree.LockWindowUpdate(FALSE);
 }
 
 bool RegistryManager::SelectNode(TreeNodeBase* parent, PCWSTR name) {

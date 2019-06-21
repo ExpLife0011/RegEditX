@@ -7,7 +7,7 @@
 #include "View.h"
 #include "TreeNodes.h"
 #include "Internals.h"
-#include "ITreeOperations.h"
+#include "UICommon.h"
 #include "IntValueDlg.h"
 #include "ChangeValueCommand.h"
 
@@ -159,6 +159,8 @@ void CView::Update(TreeNodeBase* node, bool ifTheSame) {
 	if (ifTheSame && m_CurrentNode != node)
 		return;
 
+	auto currentSelected = GetSelectedIndex();
+
 	m_CurrentNode = node;
 	node->Expand(true);
 	auto& nodes = node->GetChildNodes();
@@ -208,6 +210,8 @@ void CView::Update(TreeNodeBase* node, bool ifTheSame) {
 	int count = static_cast<int>(m_Items.size());
 	SetItemCount(count);
 	RedrawItems(0, count);
+	if (ifTheSame && currentSelected >= 0)
+		SelectItem(currentSelected);
 }
 
 void CView::Init(ITreeOperations* to, IMainApp* app) {
@@ -252,14 +256,14 @@ LRESULT CView::OnGetDispInfo(int, LPNMHDR nmhdr, BOOL&) {
 					::StringCchCopy(item.pszText, item.cchTextMax, GetDataAsString(data));
 				break;
 
-			case 4:	// last write
+			case 5:	// last write
 				if (data.TreeNode && data.LastWriteTime.QuadPart > 0) {
 					CTime dt((FILETIME&)data.LastWriteTime);
 					::StringCchCopy(item.pszText, item.cchTextMax, dt.Format(L"%c"));
 				}
 				break;
 
-			case 5:	// details
+			case 4:	// details
 				if (data.TreeNode)
 					::StringCchCopy(item.pszText, item.cchTextMax, GetKeyDetails(data.TreeNode));
 				break;
@@ -304,8 +308,8 @@ LRESULT CView::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&) {
 	InsertColumn(1, L"Type", LVCFMT_LEFT, 100 * dpi / 96);
 	InsertColumn(2, L"Size (Bytes)", LVCFMT_RIGHT, 100 * dpi / 96);
 	InsertColumn(3, L"Value", LVCFMT_LEFT, 230 * dpi / 96);
-	InsertColumn(4, L"Last Write", LVCFMT_LEFT, 150 * dpi / 96);
-	InsertColumn(5, L"Details", LVCFMT_LEFT, 200 * dpi / 96);
+	InsertColumn(4, L"Details", LVCFMT_LEFT, 200 * dpi / 96);
+	InsertColumn(5, L"Last Write", LVCFMT_LEFT, 150 * dpi / 96);
 
 	return 0;
 }
@@ -335,11 +339,12 @@ LRESULT CView::OnModifyValue(WORD, WORD, HWND, BOOL &) {
 			auto key = regNode->GetKey();
 			ULONGLONG value = 0;
 			item.ValueName == REG_DWORD ? key->QueryDWORDValue(item.ValueName, (DWORD&)value) : key->QueryQWORDValue(item.ValueName, value);
-			dlg.SetValue(value);
+			dlg.SetValue(value, m_App->IsAllowModify());
 			dlg.SetName(item.ValueName, true);
 			if (dlg.DoModal() == IDOK) {
 				std::shared_ptr<AppCommandBase> cmd = std::make_shared<ChangeValueCommand<ULONGLONG>>(m_CurrentNode->GetFullPath(), item.ValueName, dlg.GetRealValue(), item.ValueType);
-				m_App->AddCommand(cmd);
+				if (!m_App->AddCommand(cmd))
+					m_App->ShowCommandError(L"Failed to change value");
 			}
 			break;
 		}

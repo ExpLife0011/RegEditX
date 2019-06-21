@@ -5,7 +5,7 @@
 
 int CIntValueDlg::m_HexOrDec = 0;
 
-void CIntValueDlg::SetValue(ULONGLONG value) {
+void CIntValueDlg::SetValue(ULONGLONG value, bool canModify) {
 	switch (m_HexOrDec) {
 		case 0:
 			m_Value.Format(L"%llX", value);
@@ -22,6 +22,7 @@ void CIntValueDlg::SetValue(ULONGLONG value) {
 		default:
 			ATLASSERT(false);
 	}
+	m_CanModify = canModify;
 }
 
 void CIntValueDlg::SetName(const CString & name, bool readonly) {
@@ -52,6 +53,9 @@ LRESULT CIntValueDlg::OnInitDialog(UINT, WPARAM, LPARAM, BOOL &) {
 		GetDlgItem(IDC_VALUE).SetFocus();
 	}
 
+	if (!m_CanModify)
+		GetDlgItem(IDC_VALUE).SendMessage(EM_SETREADONLY, TRUE);
+
 	GetDlgItem(IDC_VALUE).SendMessage(EM_SETSEL, 0, -1);
 
 	CenterWindow(GetParent());
@@ -74,7 +78,17 @@ LRESULT CIntValueDlg::OnCloseCmd(WORD, WORD wID, HWND, BOOL &) {
 LRESULT CIntValueDlg::OnRadioButtonClicked(WORD, WORD wID, HWND, BOOL &) {
 	auto value = GetRealValue();
 	DoDataExchange(TRUE);
-	SetValue(value);
+	if(m_CanModify)
+		SetValue(value, m_CanModify);
 	DoDataExchange(FALSE);
+	return 0;
+}
+
+LRESULT CIntValueDlg::OnSelectColor(WORD, WORD wID, HWND, BOOL &) {
+	CColorDialog dlg((COLORREF)GetRealValue(), CC_ANYCOLOR | CC_FULLOPEN, m_hWnd);
+	if (dlg.DoModal() == IDOK && m_CanModify) {
+		SetValue((DWORD)dlg.GetColor(), m_CanModify);
+		DoDataExchange(FALSE);
+	}
 	return 0;
 }

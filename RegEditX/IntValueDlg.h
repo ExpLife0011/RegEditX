@@ -6,7 +6,7 @@ class CIntValueDlg :
 public:
 	enum { IDD = IDD_INTVALUE };
 
-	void SetValue(ULONGLONG value);
+	void SetValue(ULONGLONG value, bool canModify);
 	void SetName(const CString& name, bool readonly);
 	const CString& GetName() const {
 		return m_Name;
@@ -19,6 +19,7 @@ public:
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 		COMMAND_ID_HANDLER(IDOK, OnCloseCmd)
 		COMMAND_ID_HANDLER(IDCANCEL, OnCloseCmd)
+		COMMAND_ID_HANDLER(IDC_COLOR, OnSelectColor)
 		COMMAND_CODE_HANDLER(EN_CHANGE, OnTextChanged)
 		COMMAND_RANGE_CODE_HANDLER(IDC_HEX, IDC_BIN, BN_CLICKED, OnRadioButtonClicked)
 	END_MSG_MAP()
@@ -37,10 +38,12 @@ private:
 	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnRadioButtonClicked(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnSelectColor(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 private:
 	CString m_Value, m_Name;
 	static int m_HexOrDec;
 	bool m_ReadOnlyName{ false }, m_Initialized{ false };
+	bool m_CanModify{ false };
 };
 

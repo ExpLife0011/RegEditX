@@ -18,6 +18,13 @@ TreeNodeBase* TreeNodeBase::RemoveChild(const CString& name) {
 	return nullptr;
 }
 
+TreeNodeBase * TreeNodeBase::RemoveChild(size_t index) {
+	ATLASSERT(index < _childNodes.size());
+	auto node = _childNodes[index];
+	_childNodes.erase(_childNodes.begin() + index);
+	return node;
+}
+
 TreeNodeBase* TreeNodeBase::FindChild(const CString& text) const {
 	for (auto& node : _childNodes)
 		if (node->GetText().CompareNoCase(text) == 0)

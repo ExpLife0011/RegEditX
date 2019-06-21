@@ -7,7 +7,7 @@ public:
 	bool CanUndo() const;
 	bool CanRedo() const;
 
-	void AddCommand(std::shared_ptr<AppCommandBase> command, bool execute = true);
+	bool AddCommand(std::shared_ptr<AppCommandBase> command, bool execute = true);
 	bool Undo();
 	bool Redo();
 	void Clear();
