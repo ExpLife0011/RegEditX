@@ -12,6 +12,7 @@
 #include "ChangeValueCommand.h"
 #include "StringValueDlg.h"
 #include "RenameValueCommand.h"
+#include "MultiStringValueDlg.h"
 
 #pragma comment(lib, "ntdll")
 
@@ -381,6 +382,41 @@ LRESULT CView::OnModifyValue(WORD, WORD, HWND, BOOL &) {
 			break;
 		}
 
+		case REG_MULTI_SZ:
+		{
+			ULONG chars = item.ValueSize / sizeof(WCHAR);
+			auto buffer = std::make_unique<WCHAR[]>(chars);
+			if (ERROR_SUCCESS != key->QueryMultiStringValue(item.ValueName, buffer.get(), &chars)) {
+				m_App->ShowCommandError(L"Failed to read value. Try Refreshing");
+				break;
+			}
+			for (size_t i = 0; i < chars - 1; i++)
+				if (buffer[i] == L'\0')
+					buffer[i] = L'\n';
+
+			CMultiStringValueDlg dlg(m_App->IsAllowModify());
+			auto value = CString(buffer.get());
+			value.Replace(L"\n", L"\r\n");
+			dlg.SetName(item.ValueName, true);
+			dlg.SetValue(value);
+			if (dlg.DoModal() == IDOK) {
+				value = dlg.GetValue();
+				value.TrimLeft(L"\r\n");
+				value.Replace(L"\r\n", L"\x01");
+				auto buffer = value.GetBuffer();
+				for(int i = 0; i < value.GetLength(); i++)
+					if (buffer[i] == 1) {
+						buffer[i] = 0;
+					}
+
+				auto cmd = std::make_shared<ChangeValueCommand<CString>>(m_CurrentNode->GetFullPath(), item.ValueName, value, item.ValueType);
+				if (!m_App->AddCommand(cmd))
+					m_App->ShowCommandError(L"Failed to change value");
+				else
+					item.ValueSize = (1 + dlg.GetValue().GetLength()) * sizeof(WCHAR);
+			}
+			break;
+		}
 
 		default:
 			ATLASSERT(false);

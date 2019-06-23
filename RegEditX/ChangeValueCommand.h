@@ -37,14 +37,27 @@ template<typename T>
 bool ChangeValueCommand<T>::ChangeValue(CRegKey& key, const CString& value) {
 	WCHAR oldValue[2048];
 	ULONG chars = 2048;
-	auto status = key.QueryStringValue(_name, oldValue, &chars);
-	if (status != ERROR_SUCCESS)
-		return false;
+	if (_type == REG_MULTI_SZ) {
+		auto status = key.QueryMultiStringValue(_name, oldValue, &chars);
+		if (status != ERROR_SUCCESS)
+			return false;
 
-	status =  key.SetStringValue(_name, _value, _type);
-	if (status == ERROR_SUCCESS) {
-		_value = oldValue;
-		return true;
+		status = key.SetMultiStringValue(_name, _value);
+		if (status == ERROR_SUCCESS) {
+			_value = CString(oldValue, chars);
+			return true;
+		}
+	}
+	else {
+		auto status = key.QueryStringValue(_name, oldValue, &chars);
+		if (status != ERROR_SUCCESS)
+			return false;
+
+		status = key.SetStringValue(_name, _value, _type);
+		if (status == ERROR_SUCCESS) {
+			_value = oldValue;
+			return true;
+		}
 	}
 	return false;
 }
