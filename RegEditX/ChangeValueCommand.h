@@ -11,7 +11,9 @@ public:
 		_path(path), _name(name), _value(value), _type(type) {}
 
 	bool Execute() override;
-	bool Undo() override;
+	bool Undo() override {
+		return Execute();
+	}
 
 private:
 	bool ChangeValue(CRegKey& key, const CString& value);
@@ -29,11 +31,6 @@ bool ChangeValueCommand<T>::Execute() {
 	if (!key)
 		return false;
 	return ChangeValue(key, _value);
-}
-
-template<typename T>
-inline bool ChangeValueCommand<T>::Undo() {
-	return Execute();
 }
 
 template<typename T>

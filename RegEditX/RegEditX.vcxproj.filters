@@ -75,6 +75,12 @@
     <ClCompile Include="IntValueDlg.cpp">
       <Filter>Dialogs</Filter>
     </ClCompile>
+    <ClCompile Include="StringValueDlg.cpp">
+      <Filter>Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="RenameValueCommand.cpp">
+      <Filter>Commands</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -142,6 +148,12 @@
     </ClInclude>
     <ClInclude Include="UICommon.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StringValueDlg.h">
+      <Filter>Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="RenameValueCommand.h">
+      <Filter>Commands</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

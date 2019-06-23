@@ -227,6 +227,8 @@
   <ItemGroup>
     <ClCompile Include="AboutDlg.cpp" />
     <ClCompile Include="AppCommandBase.cpp" />
+    <ClCompile Include="RenameValueCommand.cpp" />
+    <ClCompile Include="StringValueDlg.cpp" />
     <ClCompile Include="FormatHelper.cpp" />
     <ClCompile Include="IntValueDlg.cpp" />
     <ClCompile Include="NewKeyDlg.cpp" />
@@ -260,6 +262,8 @@
     <ClInclude Include="CommandManager.h" />
     <ClInclude Include="CreateNewKeyCommand.h" />
     <ClInclude Include="Internals.h" />
+    <ClInclude Include="RenameValueCommand.h" />
+    <ClInclude Include="StringValueDlg.h" />
     <ClInclude Include="UICommon.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="RegHelper.h" />

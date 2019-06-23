@@ -87,15 +87,30 @@ LRESULT CMainFrame::OnTreeDeleteItem(int, LPNMHDR nmhdr, BOOL&) {
 	return 0;
 }
 
+LRESULT CMainFrame::OnBeginRename(int, LPNMHDR, BOOL&) {
+	if (!m_AllowModify)
+		return TRUE;
+
+	m_Edit = m_treeview.GetEditControl();
+	ATLASSERT(m_Edit.IsWindow());
+	return 0;
+}
+
 LRESULT CMainFrame::OnEndRename(int, LPNMHDR, BOOL&) {
+	ATLASSERT(m_Edit.IsWindow());
 	if (!m_Edit.IsWindow())
 		return 0;
 
 	CString newName;
 	m_Edit.GetWindowText(newName);
 
+	if (newName.CompareNoCase(m_SelectedNode->GetText()) == 0)
+		return 0;
+
 	auto cmd = std::make_shared<RenameKeyCommand>(m_SelectedNode->GetFullPath(), newName);
-	m_CmdMgr.AddCommand(cmd);
+	if (!m_CmdMgr.AddCommand(cmd))
+		ShowCommandError(L"Failed to rename key");
+	m_Edit.Detach();
 
 	return 0;
 }
@@ -153,7 +168,7 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	m_treeview.SetImageList(m_SmallImages.m_hImageList, TVSIL_NORMAL);
 
 	m_view.Create(m_splitter, rcDefault, nullptr, WS_CHILD | WS_VISIBLE | LVS_SINGLESEL | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
-		LVS_REPORT | LVS_SHOWSELALWAYS | LVS_OWNERDATA, WS_EX_CLIENTEDGE);
+		LVS_REPORT | LVS_SHOWSELALWAYS | LVS_OWNERDATA | LVS_EDITLABELS, WS_EX_CLIENTEDGE);
 	m_view.SetImageList(m_SmallImages.m_hImageList, LVSIL_SMALL);
 	m_view.SetImageList(m_LargeImages.m_hImageList, LVSIL_NORMAL);
 

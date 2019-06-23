@@ -16,6 +16,9 @@ public:
 
 	LSTATUS CreateKey(const CString& parent, const CString& name);
 	LSTATUS DeleteKey(const CString& parent, const CString& name);
+	LSTATUS RenameKey(const CString& parent, const CString& name);
+	LSTATUS RenameValue(const CString& path, const CString& oldName, const CString& newName);
+
 	TreeNodeBase* FindNode(TreeNodeBase* root, const CString& path) const;
 	RegKeyTreeNode* GetHiveNode(const CString& name) const;
 	bool IsExpanded(TreeNodeBase* node) const;
@@ -31,6 +34,7 @@ private:
 	HTREEITEM AddItem(TreeNodeBase* item, HTREEITEM hParent, HTREEITEM hAfter = TVI_LAST);
 	void Refresh(TreeNodeBase* node);
 	void AddNewKeys(RegKeyTreeNode* node);
+	RegKeyTreeNode* GetRoot(const CString& parent, CString& path);
 
 	RegKeyTreeNode* _registryRoot;
 	TreeNodeBase* _stdRegistryRoot;

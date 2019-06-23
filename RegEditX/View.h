@@ -38,6 +38,8 @@ public:
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		REFLECTED_NOTIFY_CODE_HANDLER(LVN_GETDISPINFO, OnGetDispInfo)
 		REFLECTED_NOTIFY_CODE_HANDLER(NM_DBLCLK, OnDoubleClick)
+		REFLECTED_NOTIFY_CODE_HANDLER(LVN_BEGINLABELEDIT, OnBeginRename)
+		REFLECTED_NOTIFY_CODE_HANDLER(LVN_ENDLABELEDIT, OnEndRename)
 		DEFAULT_REFLECTION_HANDLER()
 	ALT_MSG_MAP(1)
 		COMMAND_ID_HANDLER(ID_EDIT_DELETE, OnDelete)
@@ -51,6 +53,8 @@ public:
 	LRESULT OnDelete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnEditRename(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnModifyValue(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnBeginRename(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
+	LRESULT OnEndRename(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
 
 	// Handler prototypes (uncomment arguments if needed):
 	//	LRESULT MessageHandler(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)

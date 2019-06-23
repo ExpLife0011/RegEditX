@@ -4,9 +4,11 @@ class CIntValueDlg :
 	public CDialogImpl<CIntValueDlg>,
 	public CWinDataExchange<CIntValueDlg> {
 public:
+	CIntValueDlg(bool canModify) : m_CanModify(canModify) {}
+
 	enum { IDD = IDD_INTVALUE };
 
-	void SetValue(ULONGLONG value, bool canModify);
+	void SetValue(ULONGLONG value);
 	void SetName(const CString& name, bool readonly);
 	const CString& GetName() const {
 		return m_Name;
@@ -44,6 +46,6 @@ private:
 	CString m_Value, m_Name;
 	static int m_HexOrDec;
 	bool m_ReadOnlyName{ false }, m_Initialized{ false };
-	bool m_CanModify{ false };
+	bool m_CanModify;
 };
 

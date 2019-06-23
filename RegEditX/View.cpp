@@ -10,6 +10,8 @@
 #include "UICommon.h"
 #include "IntValueDlg.h"
 #include "ChangeValueCommand.h"
+#include "StringValueDlg.h"
+#include "RenameValueCommand.h"
 
 #pragma comment(lib, "ntdll")
 
@@ -60,8 +62,8 @@ CString CView::GetKeyDetails(TreeNodeBase* node) {
 }
 
 CString CView::GetDataAsString(const ListItem& item) {
+	ATLASSERT(m_CurrentNode && m_CurrentNode->GetNodeType() == TreeNodeType::RegistryKey);
 	auto regNode = static_cast<RegKeyTreeNode*>(m_CurrentNode);
-	ATLASSERT(regNode);
 
 	ULONG realsize = item.ValueSize;
 	ULONG size = (realsize > (1 << 12) ? (1 << 12) : realsize) / sizeof(WCHAR);
@@ -209,7 +211,7 @@ void CView::Update(TreeNodeBase* node, bool ifTheSame) {
 	}
 	int count = static_cast<int>(m_Items.size());
 	SetItemCount(count);
-	RedrawItems(0, count);
+	RedrawItems(0, min(count, GetCountPerPage()));
 	if (ifTheSame && currentSelected >= 0)
 		SelectItem(currentSelected);
 }
@@ -319,40 +321,102 @@ LRESULT CView::OnDelete(WORD, WORD, HWND, BOOL&) {
 }
 
 LRESULT CView::OnEditRename(WORD, WORD, HWND, BOOL&) {
-	m_Edit = EditLabel(GetSelectedIndex());
+	EditLabel(GetSelectedIndex());
 
 	return 0;
 }
 
 LRESULT CView::OnModifyValue(WORD, WORD, HWND, BOOL &) {
-	ATLASSERT(GetSelectedIndex() >= 0);
-	auto& item = GetItem(GetSelectedIndex());
+	auto selected = GetSelectedIndex();
+	ATLASSERT(selected >= 0);
+	auto& item = GetItem(selected);
 	ATLASSERT(item.TreeNode == nullptr);
 	ATLASSERT(m_CurrentNode->GetNodeType() == TreeNodeType::RegistryKey);
+
+	auto regNode = static_cast<RegKeyTreeNode*>(m_CurrentNode);
+	auto key = regNode->GetKey();
 
 	switch (item.ValueType) {
 		case REG_DWORD:
 		case REG_QWORD:
 		{
-			CIntValueDlg dlg;
-			auto regNode = static_cast<RegKeyTreeNode*>(m_CurrentNode);
-			auto key = regNode->GetKey();
+			CIntValueDlg dlg(m_App->IsAllowModify());
 			ULONGLONG value = 0;
-			item.ValueName == REG_DWORD ? key->QueryDWORDValue(item.ValueName, (DWORD&)value) : key->QueryQWORDValue(item.ValueName, value);
-			dlg.SetValue(value, m_App->IsAllowModify());
+			auto error = (item.ValueType == REG_DWORD) ? key->QueryDWORDValue(item.ValueName, (DWORD&)value) : key->QueryQWORDValue(item.ValueName, value);
+			if (error != ERROR_SUCCESS) {
+				m_App->ShowCommandError(L"Failed to read value");
+				return 0;
+			}
+			dlg.SetValue(value);
 			dlg.SetName(item.ValueName, true);
-			if (dlg.DoModal() == IDOK) {
-				std::shared_ptr<AppCommandBase> cmd = std::make_shared<ChangeValueCommand<ULONGLONG>>(m_CurrentNode->GetFullPath(), item.ValueName, dlg.GetRealValue(), item.ValueType);
+			if (dlg.DoModal() == IDOK && value != dlg.GetRealValue()) {
+				auto cmd = std::make_shared<ChangeValueCommand<ULONGLONG>>(m_CurrentNode->GetFullPath(), item.ValueName, dlg.GetRealValue(), item.ValueType);
 				if (!m_App->AddCommand(cmd))
 					m_App->ShowCommandError(L"Failed to change value");
 			}
 			break;
 		}
 
+		case REG_SZ:
+		case REG_EXPAND_SZ:
+		{
+			CStringValueDlg dlg(m_App->IsAllowModify());
+			dlg.SetName(item.ValueName, true);
+			dlg.SetType(item.ValueType == REG_SZ ? 0 : 1);
+			WCHAR value[2048];
+			ULONG chars = 2048;
+			auto error = key->QueryStringValue(item.ValueName, value, &chars);
+			if (error != ERROR_SUCCESS) {
+				m_App->ShowCommandError(L"Failed to read value");
+				return 0;
+			}
+			dlg.SetValue(value);
+			if (dlg.DoModal() == IDOK && dlg.GetValue() != value) {
+				auto cmd = std::make_shared<ChangeValueCommand<CString>>(m_CurrentNode->GetFullPath(), item.ValueName, dlg.GetValue(), item.ValueType);
+				if (!m_App->AddCommand(cmd))
+					m_App->ShowCommandError(L"Failed to change value");
+				else
+					item.ValueSize = (1 + dlg.GetValue().GetLength()) * sizeof(WCHAR);
+			}
+			break;
+		}
+
+
 		default:
 			ATLASSERT(false);
 			break;
 	}
 
+	RedrawItems(selected, selected);
+
+	return 0;
+}
+
+LRESULT CView::OnBeginRename(int, LPNMHDR, BOOL &) {
+	if (!m_App->IsAllowModify())
+		return TRUE;
+
+	m_Edit = GetEditControl();
+	ATLASSERT(m_Edit.IsWindow());
+	return 0;
+}
+
+LRESULT CView::OnEndRename(int, LPNMHDR, BOOL &) {
+	ATLASSERT(m_Edit.IsWindow());
+	CString newName;
+	m_Edit.GetWindowText(newName);
+
+	int index = GetSelectedIndex();
+	auto& item = GetItem(index);
+	if (newName.CompareNoCase(item.ValueName) == 0)
+		return 0;
+
+	auto cmd = std::make_shared<RenameValueCommand>(m_CurrentNode->GetFullPath(), item.ValueName, newName);
+	if (!m_App->AddCommand(cmd))
+		m_App->ShowCommandError(L"Failed to rename value");
+	else {
+		item.ValueName = newName;
+		RedrawItems(index, index);
+	}
 	return 0;
 }

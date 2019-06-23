@@ -79,6 +79,7 @@ public:
 		COMMAND_ID_HANDLER(ID_EDIT_MODIFY, OnEditModify)
 		NOTIFY_CODE_HANDLER(TVN_DELETEITEM, OnTreeDeleteItem)
 		NOTIFY_CODE_HANDLER(TVN_ENDLABELEDIT, OnEndRename)
+		NOTIFY_CODE_HANDLER(TVN_BEGINLABELEDIT, OnBeginRename)
 		NOTIFY_CODE_HANDLER(TVN_ITEMEXPANDING, OnTreeItemExpanding)
 		NOTIFY_CODE_HANDLER(TVN_SELCHANGED, OnTreeSelectionChanged)
 		NOTIFY_CODE_HANDLER(NM_RCLICK, OnTreeContextMenu)
@@ -96,6 +97,7 @@ public:
 	LRESULT OnTreeSelectionChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
 	LRESULT OnTreeDeleteItem(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
 	LRESULT OnEndRename(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
+	LRESULT OnBeginRename(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
 	LRESULT OnTreeItemExpanding(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);

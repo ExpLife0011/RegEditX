@@ -107,17 +107,8 @@ void RegistryManager::ExpandItem(TreeNodeBase* node) {
 }
 
 LSTATUS RegistryManager::CreateKey(const CString& parent, const CString& name) {
-	CString hive, path;
-	RegKeyTreeNode* root;
-	if (parent.Left(8) == L"REGISTRY") {
-		// real registry
-		path = parent.Mid(9);
-		root = _registryRoot;
-	}
-	else {
-		GetHiveAndPath(parent, hive, path);
-		root = GetHiveNode(hive);
-	}
+	CString path;
+	auto root = GetRoot(parent, path);
 	ATLASSERT(root);
 
 	CRegKey key;
@@ -137,17 +128,8 @@ LSTATUS RegistryManager::CreateKey(const CString& parent, const CString& name) {
 }
 
 LSTATUS RegistryManager::DeleteKey(const CString& parent, const CString& name) {
-	CString hive, path;
-	RegKeyTreeNode* root;
-	if (parent.Left(8) == L"REGISTRY") {
-		// real registry
-		path = parent.Mid(9);
-		root = _registryRoot;
-	}
-	else {
-		GetHiveAndPath(parent, hive, path);
-		root = GetHiveNode(hive);
-	}
+	CString path;
+	auto root = GetRoot(parent, path);
 	ATLASSERT(root);
 
 	CRegKey key;
@@ -166,6 +148,59 @@ LSTATUS RegistryManager::DeleteKey(const CString& parent, const CString& name) {
 	_tree.DeleteItem(node->GetHItem());
 	_view.Update(parentNode, true);
 
+	return status;
+}
+
+LSTATUS RegistryManager::RenameKey(const CString & parent, const CString & name) {
+	CString path;
+	auto root = GetRoot(parent, path);
+	ATLASSERT(root);
+	
+	CRegKey key;
+	auto status = key.Open(*root->GetKey(), path, KEY_WRITE);
+	if (status != ERROR_SUCCESS)
+		return status;
+
+	UNICODE_STRING uname;
+	RtlInitUnicodeString(&uname, name);
+	status = ::NtRenameKey((HANDLE)key, &uname);
+	if (NT_SUCCESS(status)) {
+		auto node = FindNode(root, path);
+		if (node) {
+			_tree.SetItemText(node->GetHItem(), name);
+			node->SetText(name);
+		}
+	}
+	return status;
+}
+
+LSTATUS RegistryManager::RenameValue(const CString & path, const CString & oldName, const CString & newName) {
+	CString realPath;
+	auto root = GetRoot(path, realPath);
+	if (root == nullptr)
+		return ERROR_NOT_FOUND;
+
+
+	CRegKey key;
+	auto status = key.Open(*root->GetKey(), realPath, KEY_READ | KEY_WRITE);
+	if (status != ERROR_SUCCESS)
+		return status;
+
+	DWORD type, size = 0;
+	status = key.QueryValue(oldName, &type, nullptr, &size);
+	if (status != ERROR_SUCCESS)
+		return status;
+
+	auto buffer = std::make_unique<BYTE[]>(size);
+	status = key.QueryValue(oldName, &type, buffer.get(), &size);
+	if (status != ERROR_SUCCESS)
+		return status;
+
+	status = key.SetValue(newName, type, buffer.get(), size);
+	if (status != ERROR_SUCCESS)
+		return status;
+
+	status = key.DeleteValue(oldName);
 	return status;
 }
 
@@ -299,6 +334,21 @@ void RegistryManager::AddNewKeys(RegKeyTreeNode * node) {
 			AddItem(newnode, node->GetHItem());
 		}
 	}
+}
+
+RegKeyTreeNode* RegistryManager::GetRoot(const CString & parent, CString & path) {
+	CString hive;
+	RegKeyTreeNode* root;
+	if (parent.Left(8) == L"REGISTRY") {
+		// real registry
+		path = parent.Mid(9);
+		root = _registryRoot;
+	}
+	else {
+		GetHiveAndPath(parent, hive, path);
+		root = GetHiveNode(hive);
+	}
+	return root;
 }
 
 void RegistryManager::GetHiveAndPath(const CString& parent, CString& hive, CString& path) {

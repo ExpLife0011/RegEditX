@@ -9,19 +9,13 @@ RenameKeyCommand::RenameKeyCommand(const CString& path, const CString& newname)
 }
 
 bool RenameKeyCommand::Execute() {
-	auto hKey = RegHelper::OpenKey(_path, KEY_WRITE);
-	if (!hKey)
-		return false;
-
 	auto index = _path.ReverseFind(L'\\');
 	CString parent = _path.Left(index);
-	UNICODE_STRING name;
-	RtlInitUnicodeString(&name, _name);
-	auto status = ::NtRenameKey(hKey, &name);
-	auto success = NT_SUCCESS(status);
-	if (success) {
-		_name = _path.Right(index + 1);
-		_path = parent + _name;
+	auto success = RegistryManager::Get().RenameKey(_path, _name);
+	if (success == ERROR_SUCCESS) {
+		auto oldname = _name;
+		_name = _path.Mid(index + 1);
+		_path = parent + L"\\" + oldname;
 	}
-	return success;
+	return success == ERROR_SUCCESS;
 }
