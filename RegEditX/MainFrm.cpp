@@ -136,7 +136,7 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 	UINT icons[] = {
 		IDI_FOLDER, IDI_FOLDER_OPEN, IDI_TEXT, IDI_BINARY,
-		IDI_HIVE
+		IDI_HIVE, IDI_UP
 	};
 
 	for (auto id : icons) {
@@ -180,6 +180,7 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	UISetCheck(ID_VIEW_TOOLBAR, 1);
 	UISetCheck(ID_VIEW_STATUS_BAR, 1);
 	UISetCheck(ID_VIEW_TREEPANE, 1);
+	UISetCheck(ID_VIEW_KEYSINLISTVIEW, 1);
 
 	// register object for message filtering and idle updates
 	CMessageLoop* pLoop = _Module.GetMessageLoop();
@@ -198,6 +199,8 @@ bool CMainFrame::AddCommand(std::shared_ptr<AppCommandBase> cmd, bool execute) {
 }
 
 LRESULT CMainFrame::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+	m_RegMgr.Destroy();
+
 	// unregister message filtering and idle updates
 	CMessageLoop* pLoop = _Module.GetMessageLoop();
 	ATLASSERT(pLoop != nullptr);

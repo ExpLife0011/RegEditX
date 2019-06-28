@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "TreeNodes.h"
+#include "RegistryManager.h"
 
 bool RegKeyTreeNode::Expand(bool expand) {
 	if (expand && GetChildNodes().empty()) {
@@ -11,6 +12,9 @@ bool RegKeyTreeNode::Expand(bool expand) {
 				len = 128;
 				if (_key.m_hKey == nullptr || _key.EnumKey(index, name, &len, &lastWrite) != ERROR_SUCCESS)
 					break;
+
+				if (::_wcsicmp(name, RegistryManager::DeletedKey) == 0)	// skip deleted key root
+					continue;
 
 				CRegKey key;
 				key.Open(_key.m_hKey, name, KEY_QUERY_VALUE | KEY_ENUMERATE_SUB_KEYS);

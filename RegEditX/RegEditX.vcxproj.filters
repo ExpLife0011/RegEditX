@@ -84,6 +84,15 @@
     <ClCompile Include="MultiStringValueDlg.cpp">
       <Filter>Dialogs</Filter>
     </ClCompile>
+    <ClCompile Include="DeleteKeyCommand.cpp">
+      <Filter>Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="BinaryValueDlg.cpp">
+      <Filter>Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="DynamicDataSource.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -161,6 +170,18 @@
     <ClInclude Include="MultiStringValueDlg.h">
       <Filter>Dialogs</Filter>
     </ClInclude>
+    <ClInclude Include="CreateNewValueCommand.h">
+      <Filter>Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="DeleteKeyCommand.h">
+      <Filter>Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="BinaryValueDlg.h">
+      <Filter>Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="DynamicDataSource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="RegEditX.rc">
@@ -190,6 +211,9 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\hive.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\up.ico">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

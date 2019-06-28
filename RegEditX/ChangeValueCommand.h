@@ -3,6 +3,11 @@
 #include "AppCommandBase.h"
 #include "RegHelper.h"
 
+struct BinaryValue {
+	unsigned Size;
+	std::unique_ptr<BYTE[]> Buffer;
+};
+
 template<typename T>
 class ChangeValueCommand : public AppCommandBase {
 public:

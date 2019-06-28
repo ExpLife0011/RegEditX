@@ -13,6 +13,7 @@
 #include "StringValueDlg.h"
 #include "RenameValueCommand.h"
 #include "MultiStringValueDlg.h"
+#include "CreateNewValueCommand.h"
 
 #pragma comment(lib, "ntdll")
 
@@ -49,15 +50,16 @@ int CView::GetRegTypeIcon(DWORD type) {
 }
 
 CString CView::GetKeyDetails(TreeNodeBase* node) {
-	ATLASSERT(node->GetNodeType() == TreeNodeType::RegistryKey);
 	CString text;
-	auto keyNode = static_cast<RegKeyTreeNode*>(node);
-	BYTE buffer[1024];
-	auto info = reinterpret_cast<KEY_FULL_INFORMATION*>(buffer);
-	ULONG len;
-	auto status = ::NtQueryKey(*keyNode->GetKey(), KeyFullInformation, info, sizeof(buffer), &len);
-	if (NT_SUCCESS(status)) {
-		text.Format(L"Subkeys: %d  Values: %d\n", info->SubKeys, info->Values);
+	if (node->GetNodeType() == TreeNodeType::RegistryKey) {
+		auto keyNode = static_cast<RegKeyTreeNode*>(node);
+		BYTE buffer[1024];
+		auto info = reinterpret_cast<KEY_FULL_INFORMATION*>(buffer);
+		ULONG len;
+		auto status = ::NtQueryKey(*keyNode->GetKey(), KeyFullInformation, info, sizeof(buffer), &len);
+		if (NT_SUCCESS(status)) {
+			text.Format(L"Subkeys: %d  Values: %d\n", info->SubKeys, info->Values);
+		}
 	}
 	return text;
 }
@@ -118,7 +120,7 @@ CString CView::GetDataAsString(const ListItem& item) {
 				break;
 			ULONG bytes = item.ValueSize;
 			auto status = regNode->GetKey()->QueryBinaryValue(item.ValueName, buffer.get(), &bytes);
-			if(status == ERROR_SUCCESS) {
+			if (status == ERROR_SUCCESS) {
 				for (DWORD i = 0; i < min(bytes, 64); i++) {
 					digit.Format(L"%02X ", buffer[i]);
 					text += digit;
@@ -168,28 +170,39 @@ void CView::Update(TreeNodeBase* node, bool ifTheSame) {
 	node->Expand(true);
 	auto& nodes = node->GetChildNodes();
 	m_Items.clear();
+
+	// add up dir
+	if (m_CurrentNode->GetParent()) {
+		ListItem item;
+		item.TreeNode = m_CurrentNode->GetParent();
+		item.UppDir = true;
+		m_Items.push_back(item);
+	}
+
 	if (nodes.empty()) {
-		SetItemCount(0);
+		SetItemCount(static_cast<int>(m_Items.size()));
 		//return;
 	}
 
 	m_Items.reserve(nodes.size() + 64);
 	auto buffer = std::make_unique<BYTE[]>(1 << 12);
 	auto info = reinterpret_cast<KEY_FULL_INFORMATION*>(buffer.get());
-	for (auto& node : nodes) {
-		ListItem item;
-		item.TreeNode = node;
-		if (node->GetNodeType() == TreeNodeType::RegistryKey) {
-			auto trueNode = static_cast<RegKeyTreeNode*>(node);
-			auto key = trueNode->GetKey();
-			if (key) {
-				ULONG len;
-				auto status = ::NtQueryKey(key->m_hKey, KeyFullInformation, info, 1 << 12, &len);
-				if (NT_SUCCESS(status))
-					item.LastWriteTime = info->LastWriteTime;
+	if (m_ViewKeys) {
+		for (auto& node : nodes) {
+			ListItem item;
+			item.TreeNode = node;
+			if (node->GetNodeType() == TreeNodeType::RegistryKey) {
+				auto trueNode = static_cast<RegKeyTreeNode*>(node);
+				auto key = trueNode->GetKey();
+				if (key) {
+					ULONG len;
+					auto status = ::NtQueryKey(key->m_hKey, KeyFullInformation, info, 1 << 12, &len);
+					if (NT_SUCCESS(status))
+						item.LastWriteTime = info->LastWriteTime;
+				}
 			}
+			m_Items.emplace_back(item);
 		}
-		m_Items.emplace_back(item);
 	}
 	if (m_CurrentNode->GetNodeType() == TreeNodeType::RegistryKey) {
 		auto trueNode = static_cast<RegKeyTreeNode*>(m_CurrentNode);
@@ -197,11 +210,22 @@ void CView::Update(TreeNodeBase* node, bool ifTheSame) {
 		if (key && key->m_hKey) {
 			WCHAR valuename[256];
 			DWORD valueType, size = 0, nameLen;
-			for (DWORD index = 0; ; ++index) {
+			for (int index = -1; ; ++index) {
 				nameLen = 256;
-				if (ERROR_NO_MORE_ITEMS == ::RegEnumValue(key->m_hKey, index, valuename, &nameLen,
-					nullptr, &valueType, nullptr, &size))
-					break;
+				if (ERROR_NO_MORE_ITEMS == ::RegEnumValue(key->m_hKey, index >= 0 ? index : 0,
+					valuename, &nameLen, nullptr, &valueType, nullptr, &size)) {
+					if (index >= 0)
+						break;
+				}
+				if (index < 0 && *valuename != L'\0') {
+					// add a default value
+					valuename[0] = L'\0';
+					valueType = REG_SZ;
+					size = 0;
+				}
+				else {
+					index++;
+				}
 				ListItem item;
 				item.ValueName = valuename;
 				item.ValueType = valueType;
@@ -222,6 +246,9 @@ void CView::Init(ITreeOperations* to, IMainApp* app) {
 	m_App = app;
 }
 
+void CView::GoToItem(ListItem & item) {
+}
+
 LRESULT CView::OnGetDispInfo(int, LPNMHDR nmhdr, BOOL&) {
 	ATLASSERT(m_CurrentNode);
 
@@ -234,8 +261,12 @@ LRESULT CView::OnGetDispInfo(int, LPNMHDR nmhdr, BOOL&) {
 	if (lv->item.mask & LVIF_TEXT) {
 		switch (col) {
 			case 0:	// name
-				if (data.TreeNode)
-					item.pszText = (PWSTR)(PCWSTR)data.TreeNode->GetText();
+				if (data.TreeNode) {
+					if (data.UppDir)
+						item.pszText = L"..";
+					else
+						item.pszText = (PWSTR)(PCWSTR)data.TreeNode->GetText();
+				}
 				else
 					item.pszText = *data.ValueName == L'\0' ? L"(Default)" : (PWSTR)(PCWSTR)data.ValueName;
 				break;
@@ -274,7 +305,7 @@ LRESULT CView::OnGetDispInfo(int, LPNMHDR nmhdr, BOOL&) {
 	}
 	if (lv->item.mask & LVIF_IMAGE) {
 		if (data.TreeNode)
-			item.iImage = 0;
+			item.iImage = data.UppDir ? 5 : 0;
 		else
 			item.iImage = GetRegTypeIcon(data.ValueType);
 	}
@@ -289,8 +320,11 @@ LRESULT CView::OnDoubleClick(int, LPNMHDR nmhdr, BOOL& handled) {
 
 	auto& item = GetItem(lv->iItem);
 	if (item.TreeNode) {
-		// key
-		m_TreeOperations->SelectNode(m_CurrentNode, item.TreeNode->GetText());
+		if (item.UppDir)
+			m_TreeOperations->SelectNode(m_CurrentNode->GetParent(), nullptr);
+		else
+			// key
+			m_TreeOperations->SelectNode(m_CurrentNode, item.TreeNode->GetText());
 	}
 	else {
 		return OnModifyValue(0, 0, nullptr, handled);
@@ -299,12 +333,28 @@ LRESULT CView::OnDoubleClick(int, LPNMHDR nmhdr, BOOL& handled) {
 	return 0;
 }
 
+LRESULT CView::OnReturnKey(int, LPNMHDR, BOOL& handled) {
+	int selected = GetSelectedIndex();
+	auto& item = GetItem(selected);
+	if (item.TreeNode) {
+		if (item.UppDir)
+			m_TreeOperations->SelectNode(m_CurrentNode->GetParent(), nullptr);
+		else
+			// key
+			m_TreeOperations->SelectNode(m_CurrentNode, item.TreeNode->GetText());
+	}
+	else {
+		return OnModifyValue(0, 0, nullptr, handled);
+	}
+	return 0;
+}
+
 LRESULT CView::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&) {
 	LRESULT lRet = DefWindowProc(uMsg, wParam, lParam);
 
 	SetExtendedListViewStyle(LVS_EX_DOUBLEBUFFER | LVS_EX_FULLROWSELECT | LVS_EX_INFOTIP | LVS_EX_LABELTIP);
 
-	using PGetDpiForWindow = UINT  (__stdcall*)(HWND);
+	using PGetDpiForWindow = UINT(__stdcall*)(HWND);
 	static PGetDpiForWindow pGetDpiForWindow = (PGetDpiForWindow)::GetProcAddress(::GetModuleHandle(L"user32"), "GetDpiForWindow");
 	auto dpi = pGetDpiForWindow ? pGetDpiForWindow(m_hWnd) : 96;
 	InsertColumn(0, L"Name", LVCFMT_LEFT, 300 * dpi / 96);
@@ -404,7 +454,7 @@ LRESULT CView::OnModifyValue(WORD, WORD, HWND, BOOL &) {
 				value.TrimLeft(L"\r\n");
 				value.Replace(L"\r\n", L"\x01");
 				auto buffer = value.GetBuffer();
-				for(int i = 0; i < value.GetLength(); i++)
+				for (int i = 0; i < value.GetLength(); i++)
 					if (buffer[i] == 1) {
 						buffer[i] = 0;
 					}
@@ -454,5 +504,40 @@ LRESULT CView::OnEndRename(int, LPNMHDR, BOOL &) {
 		item.ValueName = newName;
 		RedrawItems(index, index);
 	}
+	return 0;
+}
+
+LRESULT CView::OnNewDwordValue(WORD, WORD, HWND, BOOL &) {
+	return HandleNewIntValue(4);
+}
+
+LRESULT CView::OnNewQwordValue(WORD, WORD, HWND, BOOL &) {
+	return HandleNewIntValue(8);
+}
+
+LRESULT CView::OnViewKeys(WORD, WORD, HWND, BOOL&) {
+	m_ViewKeys = !m_ViewKeys;
+	Update(m_CurrentNode, true);
+
+	return 0;
+}
+
+LRESULT CView::HandleNewIntValue(int size) {
+	ATLASSERT(size == 4 || size == 8);
+
+	CIntValueDlg dlg(true);
+	dlg.SetValue(0);
+	dlg.SetName(L"", false);
+	if (dlg.DoModal() == IDOK) {
+		if (m_CurrentNode->FindChild(dlg.GetName())) {
+			m_App->ShowCommandError(L"Value name already exists");
+			return 0;
+		}
+
+		auto cmd = std::make_shared<CreateNewValueCommand<DWORD>>(m_CurrentNode->GetFullPath(), dlg.GetName(), dlg.GetRealValue(), size == 4 ? REG_DWORD : REG_QWORD);
+		if (!m_App->AddCommand(cmd))
+			m_App->ShowCommandError(L"Failed to create value");
+	}
+
 	return 0;
 }

@@ -29,6 +29,9 @@ RegistryManager::RegistryManager(CTreeViewCtrl& tree, CView& view) : _tree(tree)
 	_stdRegistryRoot->AddChild(_HKCC = new RegKeyTreeNode(HKEY_CURRENT_CONFIG, L"HKEY_CURENT_CONFIG", HKEY_CURRENT_CONFIG));
 
 	BuildHiveList();
+
+	_deletedKey.Create(HKEY_CURRENT_USER, DeletedKey, nullptr, 0, KEY_CREATE_SUB_KEY | KEY_READ, nullptr, nullptr);
+	ATLASSERT(_deletedKey);
 }
 
 void RegistryManager::BuildHiveList() {
@@ -351,6 +354,14 @@ RegKeyTreeNode* RegistryManager::GetRoot(const CString & parent, CString & path)
 	return root;
 }
 
+LRESULT RegistryManager::SetValue(CRegKey & key, const CString & name, const ULONGLONG& value, DWORD type) {
+	return 0;
+}
+
+LRESULT RegistryManager::SetValue(CRegKey & key, const CString & name, const CString & value, DWORD type) {
+	return LRESULT();
+}
+
 void RegistryManager::GetHiveAndPath(const CString& parent, CString& hive, CString& path) {
 	auto firstSlash = parent.Find('\\') + 1;
 	auto secondSlash = parent.Find(L'\\', firstSlash);
@@ -367,19 +378,29 @@ void RegistryManager::Refresh() {
 	_tree.LockWindowUpdate(FALSE);
 }
 
-bool RegistryManager::SelectNode(TreeNodeBase* parent, PCWSTR name) {
-	const auto& nodes = parent->GetChildNodes();
-	_tree.Expand(parent->GetHItem(), TVE_EXPAND);
-	for (const auto& node : nodes)
-		if (node->GetText().Compare(name) == 0) {
-			ATLASSERT(node->GetHItem());
-			if (_tree.SelectItem(node->GetHItem())) {
-				_tree.Expand(node->GetHItem(), TVE_EXPAND);
-				ExpandItem(node);
-			}
-			return true;
-		}
+void RegistryManager::Destroy() {
+	CRegKey key(HKEY_CURRENT_USER);
+	key.DeleteSubKey(DeletedKey);
+}
 
+bool RegistryManager::SelectNode(TreeNodeBase* parent, PCWSTR name) {
+	if (name == nullptr) {
+		_tree.SelectItem(parent->GetHItem());
+		return true;
+	}
+	else {
+		const auto& nodes = parent->GetChildNodes();
+		_tree.Expand(parent->GetHItem(), TVE_EXPAND);
+		for (const auto& node : nodes)
+			if (node->GetText().Compare(name) == 0) {
+				ATLASSERT(node->GetHItem());
+				if (_tree.SelectItem(node->GetHItem())) {
+					_tree.Expand(node->GetHItem(), TVE_EXPAND);
+					ExpandItem(node);
+				}
+				return true;
+			}
+	}
 	return false;
 }
 
