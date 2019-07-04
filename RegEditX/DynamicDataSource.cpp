@@ -2,7 +2,7 @@
 #include "DynamicDataSource.h"
 
 void DynamicDataSource::SetData(BYTE* data, DWORD size) {
-	_data.reserve(size);
+	_data.resize(size);
 	::memcpy(_data.data(), data, size);
 }
 

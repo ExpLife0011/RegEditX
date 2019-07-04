@@ -1,6 +1,6 @@
 #pragma once
 
-#include "..\\HexEditCtrl\HexEditCtrl.h"
+#include "..\HexEditCtrl\HexEditCtrl.h"
 
 class DynamicDataSource : public IDataSource {
 public:

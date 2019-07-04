@@ -31,6 +31,7 @@ public:
 	bool CanEditValue() const;
 	ListItem& GetItem(int index);
 	const ListItem& GetItem(int index) const;
+	bool IsViewKeys() const;
 
 	void Update(TreeNodeBase* node, bool onlyIfTheSame = false);
 	void Init(ITreeOperations*, IMainApp*);
@@ -48,10 +49,10 @@ public:
 		COMMAND_ID_HANDLER(ID_EDIT_DELETE, OnDelete)
 		COMMAND_ID_HANDLER(ID_EDIT_RENAME, OnEditRename)
 		COMMAND_ID_HANDLER(ID_EDIT_MODIFYVALUE, OnModifyValue)
-		COMMAND_ID_HANDLER(ID_NEW_DWORDVALUE, OnNewDwordValue)
-		COMMAND_ID_HANDLER(ID_NEW_QWORDVALUE, OnNewQwordValue)
 	ALT_MSG_MAP(2)
 		COMMAND_ID_HANDLER(ID_VIEW_KEYSINLISTVIEW, OnViewKeys)
+		COMMAND_ID_HANDLER(ID_NEW_DWORDVALUE, OnNewDwordValue)
+		COMMAND_ID_HANDLER(ID_NEW_QWORDVALUE, OnNewQwordValue)
 	END_MSG_MAP()
 
 	LRESULT OnGetDispInfo(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);

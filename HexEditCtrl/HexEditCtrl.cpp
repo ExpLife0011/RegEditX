@@ -206,7 +206,7 @@ LRESULT CHexEditorCtrl::OnSetCursor(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	ScreenToClient(&pt);
 	DWORD dwDummy = 0;
 	bool bDummy = false;
-	::SetCursor(AtlLoadCursor(GetPosFromPoint(pt, dwDummy, bDummy) ? IDC_IBEAM : IDC_ARROW));
+	::SetCursor(::LoadCursor(nullptr, MAKEINTRESOURCE(GetPosFromPoint(pt, dwDummy, bDummy) ? IDC_IBEAM : IDC_ARROW)));
 	return TRUE;
 }
 
@@ -459,9 +459,8 @@ LRESULT CHexEditorCtrl::OnEditCopy(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 
 BOOL CHexEditorCtrl::GetPosFromPoint(POINT pt, DWORD& dwPos, bool& bInDataPane) {
 	ATLASSERT(::IsWindow(m_hWnd));
-	ATLASSERT(m_rcData.left > 0);   // Oops! Not initialized! Call UpdateWindow() or delay the call!!!
-	// Get rectangles for columns. Expand them a bit so it's easier
-	// to hit with the mouse...
+	ATLASSERT(m_rcData.left > 0);
+
 	RECT rcData = m_rcData;
 	RECT rcAscii = m_rcAscii;
 	::InflateRect(&rcData, 4, 0);

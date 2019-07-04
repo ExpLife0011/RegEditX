@@ -27,6 +27,8 @@
 #define IDC_COLOR                       1005
 #define IDC_STRING                      1006
 #define IDC_EXPANDSZ                    1007
+#define IDC_CUSTOM2                     1010
+#define IDC_BUTTON1                     1011
 #define ID_VIEW_TREEPANE                32774
 #define ID_OPTIONS_ALWAYSONTOP          32775
 #define ID_VIEW_TREEFONT                32776
@@ -55,7 +57,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        219
 #define _APS_NEXT_COMMAND_VALUE         32795
-#define _APS_NEXT_CONTROL_VALUE         1009
+#define _APS_NEXT_CONTROL_VALUE         1012
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

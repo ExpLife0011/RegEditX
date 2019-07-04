@@ -43,6 +43,7 @@ void CMainFrame::UpdateUI() {
 	UISetText(ID_EDIT_REDO, (m_CmdMgr.CanRedo() ? L"Redo " + m_CmdMgr.GetRedoCommand()->GetName() : L"Redo") + CString(L"\tCtrl+Y"));
 	UIEnable(ID_EDIT_RENAME, m_AllowModify && canDelete);
 	UISetCheck(ID_EDIT_MODIFY, m_AllowModify);
+	UISetCheck(ID_VIEW_KEYSINLISTVIEW, m_view.IsViewKeys());
 }
 
 LRESULT CMainFrame::OnTreeContextMenu(int, LPNMHDR, BOOL&) {
@@ -165,12 +166,12 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 		TVS_HASLINES | TVS_LINESATROOT | TVS_HASBUTTONS | TVS_SHOWSELALWAYS | TVS_EDITLABELS, WS_EX_CLIENTEDGE);
 	//m_pane.SetClient(m_treeview);
 	m_treeview.SetExtendedStyle(TVS_EX_DOUBLEBUFFER | 0*TVS_EX_MULTISELECT, 0);
-	m_treeview.SetImageList(m_SmallImages.m_hImageList, TVSIL_NORMAL);
+	m_treeview.SetImageList(m_SmallImages, TVSIL_NORMAL);
 
 	m_view.Create(m_splitter, rcDefault, nullptr, WS_CHILD | WS_VISIBLE | LVS_SINGLESEL | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		LVS_REPORT | LVS_SHOWSELALWAYS | LVS_OWNERDATA | LVS_EDITLABELS, WS_EX_CLIENTEDGE);
-	m_view.SetImageList(m_SmallImages.m_hImageList, LVSIL_SMALL);
-	m_view.SetImageList(m_LargeImages.m_hImageList, LVSIL_NORMAL);
+	m_view.SetImageList(m_SmallImages, LVSIL_SMALL);
+	m_view.SetImageList(m_LargeImages, LVSIL_NORMAL);
 
 	m_splitter.SetSplitterPanes(m_treeview, m_view);
 	UpdateLayout();

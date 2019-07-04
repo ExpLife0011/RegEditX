@@ -1,6 +1,6 @@
 #pragma once
 
-class CIntValueDlg : 
+class CIntValueDlg :
 	public CDialogImpl<CIntValueDlg>,
 	public CWinDataExchange<CIntValueDlg> {
 public:
@@ -33,7 +33,6 @@ public:
 		DDX_TEXT_LEN(IDC_VALUE, m_Value, 32)
 		DDX_TEXT(IDC_VALUE, m_Value)
 	END_DDX_MAP()
-
 
 private:
 	LRESULT OnTextChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);

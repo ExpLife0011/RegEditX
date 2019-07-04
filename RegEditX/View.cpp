@@ -14,6 +14,7 @@
 #include "RenameValueCommand.h"
 #include "MultiStringValueDlg.h"
 #include "CreateNewValueCommand.h"
+#include "BinaryValueDlg.h"
 
 #pragma comment(lib, "ntdll")
 
@@ -160,6 +161,10 @@ const ListItem & CView::GetItem(int index) const {
 	return m_Items[index];
 }
 
+bool CView::IsViewKeys() const {
+	return m_ViewKeys;
+}
+
 void CView::Update(TreeNodeBase* node, bool ifTheSame) {
 	if (ifTheSame && m_CurrentNode != node)
 		return;
@@ -223,7 +228,7 @@ void CView::Update(TreeNodeBase* node, bool ifTheSame) {
 					valueType = REG_SZ;
 					size = 0;
 				}
-				else {
+				else if(index < 0) {
 					index++;
 				}
 				ListItem item;
@@ -468,6 +473,23 @@ LRESULT CView::OnModifyValue(WORD, WORD, HWND, BOOL &) {
 			break;
 		}
 
+		case REG_BINARY:
+		{
+			auto data = std::make_unique<BYTE[]>(item.ValueSize);
+			ATLASSERT(data);
+			ULONG size = item.ValueSize;
+			if (ERROR_SUCCESS != key->QueryBinaryValue(item.ValueName, data.get(), &size)) {
+				m_App->ShowCommandError(L"Failed to read binary value");
+				break;
+			}
+			CBinaryValueDlg dlg(m_App->IsAllowModify());
+			dlg.SetValue(data.get(), item.ValueSize);
+			dlg.SetName(item.ValueName, true);
+			if (dlg.DoModal() == IDOK) {
+			}
+			break;
+		}
+
 		default:
 			ATLASSERT(false);
 			break;
@@ -534,7 +556,7 @@ LRESULT CView::HandleNewIntValue(int size) {
 			return 0;
 		}
 
-		auto cmd = std::make_shared<CreateNewValueCommand<DWORD>>(m_CurrentNode->GetFullPath(), dlg.GetName(), dlg.GetRealValue(), size == 4 ? REG_DWORD : REG_QWORD);
+		auto cmd = std::make_shared<CreateNewValueCommand<ULONGLONG>>(m_CurrentNode->GetFullPath(), dlg.GetName(), dlg.GetRealValue(), size == 4 ? REG_DWORD : REG_QWORD);
 		if (!m_App->AddCommand(cmd))
 			m_App->ShowCommandError(L"Failed to create value");
 	}

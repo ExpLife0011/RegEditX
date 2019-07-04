@@ -9,15 +9,15 @@ struct IDataSource {
 class CHexEditorCtrl :
 	public CWindowImpl<CHexEditorCtrl> {
 public:
-	DECLARE_WND_CLASS_EX(_T("WTLHexEditor"), CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS, COLOR_WINDOW + 1)
+	DECLARE_WND_CLASS_EX(L"WTLHexEditor", CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS, COLOR_WINDOW + 1)
 
 	CHexEditorCtrl();
-	virtual ~CHexEditorCtrl() = default;
+	~CHexEditorCtrl() = default;
 
-	typedef struct {
+	struct UNDOENTRY {
 		DWORD dwPos;
 		BYTE bValue;
-	} UNDOENTRY;
+	};
 
 	IDataSource* m_pDataSource{ nullptr };
 	DWORD	m_dwPos;                        // File Position of top of view
