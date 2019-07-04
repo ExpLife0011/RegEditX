@@ -40,6 +40,7 @@ public:
 	BEGIN_MSG_MAP(CView)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		REFLECTED_NOTIFY_CODE_HANDLER(LVN_GETDISPINFO, OnGetDispInfo)
+		REFLECTED_NOTIFY_CODE_HANDLER(LVN_ODFINDITEM, OnFindItem)
 		REFLECTED_NOTIFY_CODE_HANDLER(NM_DBLCLK, OnDoubleClick)
 		REFLECTED_NOTIFY_CODE_HANDLER(NM_RETURN, OnReturnKey)
 		REFLECTED_NOTIFY_CODE_HANDLER(LVN_BEGINLABELEDIT, OnBeginRename)
@@ -53,9 +54,11 @@ public:
 		COMMAND_ID_HANDLER(ID_VIEW_KEYSINLISTVIEW, OnViewKeys)
 		COMMAND_ID_HANDLER(ID_NEW_DWORDVALUE, OnNewDwordValue)
 		COMMAND_ID_HANDLER(ID_NEW_QWORDVALUE, OnNewQwordValue)
+		COMMAND_RANGE_HANDLER(ID_VIEW_TYPE_DETAILS, ID_VIEW_TYPE_TILES, OnChangeViewType)
 	END_MSG_MAP()
 
 	LRESULT OnGetDispInfo(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
+	LRESULT OnFindItem(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
 	LRESULT OnDoubleClick(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
 	LRESULT OnReturnKey(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
@@ -67,6 +70,7 @@ public:
 	LRESULT OnNewDwordValue(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnNewQwordValue(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnViewKeys(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnChangeViewType(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	LRESULT HandleNewIntValue(int size);
 
@@ -76,6 +80,7 @@ public:
 	//	LRESULT NotifyHandler(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/)
 
 private:
+
 	CEdit m_Edit;
 	TreeNodeBase* m_CurrentNode{ nullptr };
 	ITreeOperations* m_TreeOperations;

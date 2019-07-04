@@ -318,6 +318,22 @@ LRESULT CView::OnGetDispInfo(int, LPNMHDR nmhdr, BOOL&) {
 	return 0;
 }
 
+LRESULT CView::OnFindItem(int, LPNMHDR hdr, BOOL &) {
+	auto fi = (NMLVFINDITEM*)hdr;
+
+	auto count = GetItemCount();
+	auto str = fi->lvfi.psz;
+	for (int i = fi->iStart; i < fi->iStart + count; i++) {
+		auto& item = m_Items[i % count];
+		if (item.TreeNode && ::_wcsnicmp(item.TreeNode->GetText(), str, ::wcslen(str)) == 0)
+			return i % count;
+		else if (item.TreeNode == nullptr && ::_wcsnicmp(item.ValueName, str, ::wcslen(str)) == 0)
+			return i % count;
+	}
+
+	return -1;
+}
+
 LRESULT CView::OnDoubleClick(int, LPNMHDR nmhdr, BOOL& handled) {
 	auto lv = reinterpret_cast<NMITEMACTIVATE*>(nmhdr);
 	if (m_Items.empty())
@@ -544,6 +560,23 @@ LRESULT CView::OnViewKeys(WORD, WORD, HWND, BOOL&) {
 	return 0;
 }
 
+LRESULT CView::OnChangeViewType(WORD, WORD id, HWND, BOOL &) {
+	DWORD type;
+	switch (id) {
+	case ID_VIEW_TYPE_DETAILS: type = LV_VIEW_DETAILS; break;
+	case ID_VIEW_TYPE_LIST: type = LV_VIEW_LIST; break;
+	case ID_VIEW_TYPE_ICONS: type = LV_VIEW_ICON; break;
+	case ID_VIEW_TYPE_TILES: type = LV_VIEW_TILE; break;
+
+	default: 
+		ATLASSERT(false);
+	}
+
+	SetView(type);
+
+	return 0;
+}
+
 LRESULT CView::HandleNewIntValue(int size) {
 	ATLASSERT(size == 4 || size == 8);
 
@@ -556,7 +589,8 @@ LRESULT CView::HandleNewIntValue(int size) {
 			return 0;
 		}
 
-		auto cmd = std::make_shared<CreateNewValueCommand<ULONGLONG>>(m_CurrentNode->GetFullPath(), dlg.GetName(), dlg.GetRealValue(), size == 4 ? REG_DWORD : REG_QWORD);
+		auto cmd = std::make_shared<CreateNewValueCommand<ULONGLONG>>(m_CurrentNode->GetFullPath(), 
+			dlg.GetName(), dlg.GetRealValue(), size == 4 ? REG_DWORD : REG_QWORD);
 		if (!m_App->AddCommand(cmd))
 			m_App->ShowCommandError(L"Failed to create value");
 	}

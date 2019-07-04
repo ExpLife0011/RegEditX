@@ -146,6 +146,13 @@ BEGIN
         MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
         MENUITEM "Tree",                        ID_VIEW_TREEPANE
         MENUITEM "&Keys in List View",          ID_VIEW_KEYSINLISTVIEW
+		POPUP "List View"
+		BEGIN
+			MENUITEM "&Details",				ID_VIEW_TYPE_DETAILS
+			MENUITEM "&List",					ID_VIEW_TYPE_LIST
+			MENUITEM "&Icons",					ID_VIEW_TYPE_ICONS
+			MENUITEM "&Tiles",					ID_VIEW_TYPE_TILES
+		END
         MENUITEM SEPARATOR
         MENUITEM "&Refresh\tF5",                ID_VIEW_REFRESH
         MENUITEM SEPARATOR
