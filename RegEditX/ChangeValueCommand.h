@@ -15,6 +15,12 @@ public:
 		AppCommandBase(L"Change Value"),
 		_path(path), _name(name), _value(value), _type(type) {}
 
+	ChangeValueCommand(const CString& path, const CString& name, BinaryValue& value) :
+		AppCommandBase(L"Change Value"),
+		_path(path), _name(name), _value(std::move(value)), _type(REG_BINARY) {
+	}
+
+
 	bool Execute() override;
 	bool Undo() override {
 		return Execute();
@@ -23,6 +29,7 @@ public:
 private:
 	bool ChangeValue(CRegKey& key, const CString& value);
 	bool ChangeValue(CRegKey& key, ULONGLONG value);
+	bool ChangeValue(CRegKey& key, const BinaryValue& value);
 
 private:
 	T _value;
@@ -81,4 +88,29 @@ inline bool ChangeValueCommand<T>::ChangeValue(CRegKey & key, ULONGLONG value) {
 		return true;
 	}
 	return false;
+}
+
+template<typename T>
+inline bool ChangeValueCommand<T>::ChangeValue(CRegKey & key, const BinaryValue & value) {
+	ULONG size;
+	auto status = key.QueryBinaryValue(_name, nullptr, &size);
+	if (status != ERROR_SUCCESS)
+		return false;
+
+	ATLASSERT(size > 0);
+	auto buffer = std::make_unique<BYTE[]>(size);
+	status = key.QueryBinaryValue(_name, buffer.get(), &size);
+	if (status != ERROR_SUCCESS)
+		return false;
+
+	// make the change
+
+	status = key.SetBinaryValue(_name, value.Buffer.get(), value.Size);
+	if (status != ERROR_SUCCESS)
+		return false;
+
+	_value.Buffer = std::move(buffer);
+	_value.Size = size;
+
+	return true;
 }

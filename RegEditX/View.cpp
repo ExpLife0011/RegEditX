@@ -499,9 +499,20 @@ LRESULT CView::OnModifyValue(WORD, WORD, HWND, BOOL &) {
 				break;
 			}
 			CBinaryValueDlg dlg(m_App->IsAllowModify());
-			dlg.SetValue(data.get(), item.ValueSize);
+			InMemoryBuffer buffer;
+			buffer.SetData(0, data.get(), item.ValueSize);
+			dlg.SetBuffer(&buffer);
 			dlg.SetName(item.ValueName, true);
 			if (dlg.DoModal() == IDOK) {
+				BinaryValue value;
+				value.Size = buffer.GetSize();
+				value.Buffer = std::make_unique<BYTE[]>(buffer.GetSize());
+				::memcpy(value.Buffer.get(), buffer.GetRawData(0), value.Size);
+				auto cmd = std::make_shared<ChangeValueCommand<BinaryValue>>(m_CurrentNode->GetFullPath(), item.ValueName, value);
+				if (m_App->AddCommand(cmd))
+					item.ValueSize = buffer.GetSize();
+				else
+					m_App->ShowCommandError(L"Failed to change binary value");
 			}
 			break;
 		}

@@ -146,13 +146,13 @@ BEGIN
         MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
         MENUITEM "Tree",                        ID_VIEW_TREEPANE
         MENUITEM "&Keys in List View",          ID_VIEW_KEYSINLISTVIEW
-		POPUP "List View"
-		BEGIN
-			MENUITEM "&Details",				ID_VIEW_TYPE_DETAILS
-			MENUITEM "&List",					ID_VIEW_TYPE_LIST
-			MENUITEM "&Icons",					ID_VIEW_TYPE_ICONS
-			MENUITEM "&Tiles",					ID_VIEW_TYPE_TILES
-		END
+        POPUP "List View"
+        BEGIN
+            MENUITEM "&Details",                    ID_VIEW_TYPE_DETAILS
+            MENUITEM "&List",                       ID_VIEW_TYPE_LIST
+            MENUITEM "&Icons",                      ID_VIEW_TYPE_ICONS
+            MENUITEM "&Tiles",                      ID_VIEW_TYPE_TILES
+        END
         MENUITEM SEPARATOR
         MENUITEM "&Refresh\tF5",                ID_VIEW_REFRESH
         MENUITEM SEPARATOR
@@ -307,7 +307,7 @@ BEGIN
 END
 
 IDD_BINVALUE DIALOGEX 0, 0, 347, 176
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_CAPTION | WS_SYSMENU
 CAPTION "Edit Binary Data"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
@@ -478,7 +478,7 @@ END
 
 STRINGTABLE
 BEGIN
-    IDR_MAINFRAME           "Registry Editor X"
+    IDR_MAINFRAME           "Registry Editor X 0.2 (C)2019 Pavel Yosifovich"
 END
 
 STRINGTABLE

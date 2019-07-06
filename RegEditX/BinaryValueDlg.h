@@ -1,7 +1,8 @@
 #pragma once
 
-#include "..\HexEditCtrl\HexEditCtrl.h"
-#include "DynamicDataSource.h"
+#include "HexControl\HexControl.h"
+#include "HexControl\InMemoryBuffer.h"
+
 
 class CBinaryValueDlg :
 	public CDialogImpl<CBinaryValueDlg>,
@@ -15,13 +16,14 @@ public:
 	const CString& GetName() const {
 		return m_Name;
 	}
-	void SetValue(BYTE* data, DWORD size);
+	void SetBuffer(IBufferManager* buffer);
 
 	BEGIN_MSG_MAP(CBinValueDlg)
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 		COMMAND_ID_HANDLER(IDOK, OnCloseCmd)
 		COMMAND_ID_HANDLER(IDCANCEL, OnCloseCmd)
 		COMMAND_CODE_HANDLER(EN_CHANGE, OnTextChanged)
+		FORWARD_NOTIFICATIONS()
 	END_MSG_MAP()
 
 	BEGIN_DDX_MAP(CBinValueDlg)
@@ -35,8 +37,7 @@ protected:
 	LRESULT OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 private:
-	CHexEditorCtrl m_HexEdit;
-	DynamicDataSource m_DataSource;
+	CHexControl m_HexEdit;
 	CString m_Name;
 	bool m_ReadOnlyName{ false };
 	bool m_CanModify;

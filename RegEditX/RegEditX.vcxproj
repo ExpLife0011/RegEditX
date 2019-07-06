@@ -27,13 +27,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -45,7 +45,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -229,7 +229,6 @@
     <ClCompile Include="AppCommandBase.cpp" />
     <ClCompile Include="BinaryValueDlg.cpp" />
     <ClCompile Include="DeleteKeyCommand.cpp" />
-    <ClCompile Include="DynamicDataSource.cpp" />
     <ClCompile Include="MultiStringValueDlg.cpp" />
     <ClCompile Include="RenameValueCommand.cpp" />
     <ClCompile Include="StringValueDlg.cpp" />
@@ -262,7 +261,6 @@
     <ClInclude Include="ChangeValueCommand.h" />
     <ClInclude Include="CreateNewValueCommand.h" />
     <ClInclude Include="DeleteKeyCommand.h" />
-    <ClInclude Include="DynamicDataSource.h" />
     <ClInclude Include="FormatHelper.h" />
     <ClInclude Include="IDetailsProvider.h" />
     <ClInclude Include="IntValueDlg.h" />
@@ -301,11 +299,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\HexEditCtrl\HexEditCtrl.vcxproj">
-      <Project>{87e6d4b0-2be8-4dff-a306-46517c8264cf}</Project>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

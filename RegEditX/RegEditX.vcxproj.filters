@@ -90,9 +90,6 @@
     <ClCompile Include="BinaryValueDlg.cpp">
       <Filter>Dialogs</Filter>
     </ClCompile>
-    <ClCompile Include="DynamicDataSource.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -178,9 +175,6 @@
     </ClInclude>
     <ClInclude Include="BinaryValueDlg.h">
       <Filter>Dialogs</Filter>
-    </ClInclude>
-    <ClInclude Include="DynamicDataSource.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

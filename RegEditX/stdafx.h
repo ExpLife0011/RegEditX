@@ -29,6 +29,7 @@ extern CAppModule _Module;
 #include <strsafe.h>
 #include <atltime.h>
 #include <atlddx.h>
+#include <atltypes.h>
 #include <atlcoll.h>
 #include <atlcrack.h>
 #include <unordered_map>
