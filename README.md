@@ -10,4 +10,4 @@ Enhanced registry editor (work in progress). Notable improvements over the stand
 * Last write time shown for keys
 * Better icons :) (icons by Axialis <http://www.axialis.com>)
 
-[screenshot](regeditx.png)
+![screenshot](regeditx.png)
