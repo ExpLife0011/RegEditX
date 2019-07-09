@@ -37,7 +37,6 @@
 #define ID_NEW_KEY                      32779
 #define ID_EDIT_MODIFY                  32780
 #define ID_TREE_NEW                     32781
-#define ID_NEW_KEY32782                 32782
 #define ID_NEW_DWORDVALUE               32783
 #define ID_NEW_QWORDVALUE               32784
 #define ID_NEW_STRINGVALUE              32785

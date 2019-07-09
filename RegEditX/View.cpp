@@ -166,6 +166,8 @@ bool CView::IsViewKeys() const {
 }
 
 void CView::Update(TreeNodeBase* node, bool ifTheSame) {
+	if (node == nullptr)
+		node = m_CurrentNode;
 	if (ifTheSame && m_CurrentNode != node)
 		return;
 
@@ -180,7 +182,7 @@ void CView::Update(TreeNodeBase* node, bool ifTheSame) {
 	if (m_CurrentNode->GetParent()) {
 		ListItem item;
 		item.TreeNode = m_CurrentNode->GetParent();
-		item.UppDir = true;
+		item.UpDir = true;
 		m_Items.push_back(item);
 	}
 
@@ -267,7 +269,7 @@ LRESULT CView::OnGetDispInfo(int, LPNMHDR nmhdr, BOOL&) {
 		switch (col) {
 			case 0:	// name
 				if (data.TreeNode) {
-					if (data.UppDir)
+					if (data.UpDir)
 						item.pszText = L"..";
 					else
 						item.pszText = (PWSTR)(PCWSTR)data.TreeNode->GetText();
@@ -303,14 +305,14 @@ LRESULT CView::OnGetDispInfo(int, LPNMHDR nmhdr, BOOL&) {
 				break;
 
 			case 4:	// details
-				if (data.TreeNode)
+				if (data.TreeNode && !data.UpDir)
 					::StringCchCopy(item.pszText, item.cchTextMax, GetKeyDetails(data.TreeNode));
 				break;
 		}
 	}
 	if (lv->item.mask & LVIF_IMAGE) {
 		if (data.TreeNode)
-			item.iImage = data.UppDir ? 5 : 0;
+			item.iImage = data.UpDir ? 5 : 0;
 		else
 			item.iImage = GetRegTypeIcon(data.ValueType);
 	}
@@ -341,7 +343,7 @@ LRESULT CView::OnDoubleClick(int, LPNMHDR nmhdr, BOOL& handled) {
 
 	auto& item = GetItem(lv->iItem);
 	if (item.TreeNode) {
-		if (item.UppDir)
+		if (item.UpDir)
 			m_TreeOperations->SelectNode(m_CurrentNode->GetParent(), nullptr);
 		else
 			// key
@@ -358,7 +360,7 @@ LRESULT CView::OnReturnKey(int, LPNMHDR, BOOL& handled) {
 	int selected = GetSelectedIndex();
 	auto& item = GetItem(selected);
 	if (item.TreeNode) {
-		if (item.UppDir)
+		if (item.UpDir)
 			m_TreeOperations->SelectNode(m_CurrentNode->GetParent(), nullptr);
 		else
 			// key
@@ -505,12 +507,12 @@ LRESULT CView::OnModifyValue(WORD, WORD, HWND, BOOL &) {
 			dlg.SetName(item.ValueName, true);
 			if (dlg.DoModal() == IDOK) {
 				BinaryValue value;
-				value.Size = buffer.GetSize();
+				value.Size = static_cast<DWORD>(buffer.GetSize());
 				value.Buffer = std::make_unique<BYTE[]>(buffer.GetSize());
 				::memcpy(value.Buffer.get(), buffer.GetRawData(0), value.Size);
 				auto cmd = std::make_shared<ChangeValueCommand<BinaryValue>>(m_CurrentNode->GetFullPath(), item.ValueName, value);
 				if (m_App->AddCommand(cmd))
-					item.ValueSize = buffer.GetSize();
+					item.ValueSize = static_cast<DWORD>(buffer.GetSize());
 				else
 					m_App->ShowCommandError(L"Failed to change binary value");
 			}
@@ -604,6 +606,11 @@ LRESULT CView::HandleNewIntValue(int size) {
 			dlg.GetName(), dlg.GetRealValue(), size == 4 ? REG_DWORD : REG_QWORD);
 		if (!m_App->AddCommand(cmd))
 			m_App->ShowCommandError(L"Failed to create value");
+		else {
+			auto index = FindItem(dlg.GetName(), false, true);
+			ATLASSERT(index >= 0);
+			SelectItem(index);
+		}
 	}
 
 	return 0;

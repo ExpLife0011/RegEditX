@@ -15,7 +15,7 @@ struct ListItem {
 	CString ValueName;
 	DWORD ValueType, ValueSize;
 	LARGE_INTEGER LastWriteTime = { 0 };
-	bool UppDir{ false };
+	bool UpDir{ false };
 };
 
 class CView : public CWindowImpl<CView, CListViewCtrl> {

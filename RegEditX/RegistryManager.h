@@ -23,6 +23,7 @@ public:
 	LSTATUS DeleteKey(const CString& parent, const CString& name);
 	LSTATUS RenameKey(const CString& parent, const CString& name);
 	LSTATUS RenameValue(const CString& path, const CString& oldName, const CString& newName);
+	LSTATUS DeleteValue(const CString& path, const CString& name);
 
 	RegKeyTreeNode* GetRoot(const CString& parent, CString& path);
 
@@ -82,5 +83,8 @@ inline LSTATUS RegistryManager::CreateValue(const CString & path, const CString 
 	if (status != ERROR_SUCCESS)
 		return status;
 
-	return (LSTATUS)SetValue(key, name, value, type);
+	status = (LSTATUS)SetValue(key, name, value, type);
+	if (status == ERROR_SUCCESS)
+		_view.Update(nullptr, true);
+	return status;
 }

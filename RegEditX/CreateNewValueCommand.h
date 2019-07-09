@@ -27,5 +27,6 @@ inline bool CreateNewValueCommand<T>::Execute() {
 
 template<typename T>
 inline bool CreateNewValueCommand<T>::Undo() {
-	return false;
+	auto status = RegistryManager::Get().DeleteValue(_path, _name);
+	return status == ERROR_SUCCESS;
 }

@@ -44,6 +44,8 @@ void CMainFrame::UpdateUI() {
 	UIEnable(ID_EDIT_RENAME, m_AllowModify && canDelete);
 	UISetCheck(ID_EDIT_MODIFY, m_AllowModify);
 	UISetCheck(ID_VIEW_KEYSINLISTVIEW, m_view.IsViewKeys());
+	for(int id = ID_NEW_DWORDVALUE; id <= ID_NEW_BINARYVALUE; id++)
+		UIEnable(id, m_AllowModify);
 }
 
 LRESULT CMainFrame::OnTreeContextMenu(int, LPNMHDR, BOOL&) {
@@ -289,7 +291,8 @@ LRESULT CMainFrame::OnNewKey(WORD, WORD, HWND, BOOL&) {
 			return 0;
 		}
 		auto cmd = std::make_shared<CreateNewKeyCommand>(node->GetFullPath(), dlg.GetKeyName());
-		m_CmdMgr.AddCommand(cmd);
+		if (!m_CmdMgr.AddCommand(cmd))
+			ShowCommandError(L"Failed to create key");
 
 	}
 

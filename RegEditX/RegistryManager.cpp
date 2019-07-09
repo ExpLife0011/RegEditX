@@ -207,6 +207,22 @@ LSTATUS RegistryManager::RenameValue(const CString & path, const CString & oldNa
 	return status;
 }
 
+LSTATUS RegistryManager::DeleteValue(const CString & path, const CString & name) {
+	CString realpath;
+	auto root = GetRoot(path, realpath);
+	ATLASSERT(root);
+
+	CRegKey key;
+	auto status = key.Open(*root->GetKey(), realpath, KEY_WRITE);
+	if (status != ERROR_SUCCESS)
+		return status;
+
+	status = key.DeleteValue(name);
+	if (status == ERROR_SUCCESS)
+		_view.Update(nullptr, true);
+	return status;
+}
+
 TreeNodeBase* RegistryManager::FindNode(TreeNodeBase* root, const CString& path) const {
 	int index = 0;
 	//auto name = path.Tokenize(L"\\", index);
@@ -355,11 +371,14 @@ RegKeyTreeNode* RegistryManager::GetRoot(const CString & parent, CString & path)
 }
 
 LRESULT RegistryManager::SetValue(CRegKey & key, const CString & name, const ULONGLONG& value, DWORD type) {
-	return 0;
+	if (type == REG_DWORD)
+		return key.SetDWORDValue(name, (DWORD)value);
+	return key.SetQWORDValue(name, value);
+
 }
 
 LRESULT RegistryManager::SetValue(CRegKey & key, const CString & name, const CString & value, DWORD type) {
-	return LRESULT();
+	return key.SetStringValue(name, value, type);
 }
 
 void RegistryManager::GetHiveAndPath(const CString& parent, CString& hive, CString& path) {
